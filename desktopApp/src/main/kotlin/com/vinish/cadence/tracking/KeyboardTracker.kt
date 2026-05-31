@@ -1,6 +1,6 @@
 package com.vinish.cadence.tracking
 import com.sun.jna.platform.win32.*
-import com.sun.jna.platform.win32.WinUser.MSG;
+import com.sun.jna.platform.win32.WinUser.MSG
 import com.sun.jna.platform.win32.WinUser.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ object KeyboardTracker {
 
             if (nCode >= 0) {
 
-                if (wParam.toInt() == WinUser.WM_KEYDOWN) {
+                if (wParam.toInt() == WM_KEYDOWN) {
 
                     _typingCount.value++
                 }
@@ -33,7 +33,7 @@ object KeyboardTracker {
         }
 
         hook = User32.INSTANCE.SetWindowsHookEx(
-            WinUser.WH_KEYBOARD_LL,
+            WH_KEYBOARD_LL,
             hookProc,
             Kernel32.INSTANCE.GetModuleHandle(null),
             0
