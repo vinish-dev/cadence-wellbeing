@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.shared)
 
     implementation(compose.desktop.currentOs)
+    implementation(compose.materialIconsExtended)
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
@@ -23,9 +24,13 @@ compose.desktop {
         mainClass = "com.vinish.cadence.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb,TargetFormat.Exe)
             packageName = "com.vinish.cadence"
             packageVersion = "1.0.0"
+            includeAllModules = false
+        }
+        buildTypes.release.proguard{
+            isEnabled.set(false)
         }
     }
 }

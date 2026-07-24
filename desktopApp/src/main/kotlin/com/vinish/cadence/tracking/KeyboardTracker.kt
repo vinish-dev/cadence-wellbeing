@@ -10,6 +10,7 @@ object KeyboardTracker {
     private val _typingCount = MutableStateFlow(0)
     val typingCount = _typingCount.asStateFlow()
 
+//    “reference to the installed keyboard listener”
     private var hook: HHOOK? = null
 
     fun start() {
