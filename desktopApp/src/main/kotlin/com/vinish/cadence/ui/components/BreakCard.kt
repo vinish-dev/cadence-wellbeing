@@ -96,7 +96,7 @@ fun BreakCard(
                         color = CadenceTextPrimary,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
@@ -112,7 +112,7 @@ fun BreakCard(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFF7F8FC))
+                                .background(Color(0xFFE9EBFF))
                                 .padding(horizontal = 14.dp, vertical = 10.dp),
                         ) {
                             Text(
