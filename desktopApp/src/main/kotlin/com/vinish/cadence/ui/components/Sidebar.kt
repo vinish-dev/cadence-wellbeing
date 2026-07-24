@@ -58,7 +58,7 @@ fun Sidebar(
     Column(
         modifier = modifier
             .fillMaxHeight()
-            .width(if (compact) 92.dp else 156.dp)
+            .width(if (compact) 100.dp else 180.dp)
             .background(Color.White)
             .padding(horizontal = 14.dp, vertical = 20.dp),
     ) {
