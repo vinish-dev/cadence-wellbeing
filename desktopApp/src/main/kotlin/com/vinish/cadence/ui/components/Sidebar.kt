@@ -1,6 +1,7 @@
 package com.vinish.cadence.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ private data class SidebarItemUi(
 @Composable
 fun Sidebar(
     selectedDestination: CadenceDestination,
+    onDestinationSelected: (CadenceDestination) -> Unit,
     compact: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -70,6 +72,7 @@ fun Sidebar(
                     label = item.destination.label,
                     icon = item.icon,
                     selected = item.destination == selectedDestination,
+                    onClick = { onDestinationSelected(item.destination) },
                     compact = compact,
                 )
             }
@@ -119,6 +122,7 @@ private fun SidebarItem(
     label: String,
     icon: ImageVector,
     selected: Boolean,
+    onClick: () -> Unit,
     compact: Boolean,
 ) {
     Row(
@@ -126,6 +130,7 @@ private fun SidebarItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(if (selected) CadencePurpleSoft else CadenceBackground)
+            .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = if (compact) Arrangement.Center else Arrangement.Start,

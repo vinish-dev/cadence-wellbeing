@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Timelapse
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,18 +31,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vinish.cadence.ui.components.ActivityChartCard
 import com.vinish.cadence.ui.components.ActivityTimeline
 import com.vinish.cadence.ui.components.BreakCard
 import com.vinish.cadence.ui.components.CurrentFocusCard
+import com.vinish.cadence.ui.components.DashboardCard
 import com.vinish.cadence.ui.components.MetricCard
 import com.vinish.cadence.ui.components.Sidebar
 import com.vinish.cadence.ui.components.TopAppsCard
 import com.vinish.cadence.ui.components.TrackingCard
 import com.vinish.cadence.ui.navigation.CadenceDestination
 import com.vinish.cadence.ui.theme.CadenceBackground
+import com.vinish.cadence.ui.theme.CadenceGraySoft
+import com.vinish.cadence.ui.theme.CadencePurple
 import com.vinish.cadence.ui.theme.CadenceTextPrimary
 import com.vinish.cadence.ui.theme.CadenceTextSecondary
 
@@ -52,6 +60,8 @@ private enum class DashboardLayoutMode {
 @Composable
 fun DashboardScreen(
     state: DashboardUiState,
+    selectedDestination: CadenceDestination,
+    onDestinationSelected: (CadenceDestination) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -76,7 +86,8 @@ fun DashboardScreen(
                     ),
             ) {
                 Sidebar(
-                    selectedDestination = CadenceDestination.Dashboard,
+                    selectedDestination = selectedDestination,
+                    onDestinationSelected = onDestinationSelected,
                     compact = sidebarCompact,
                 )
                 LazyColumn(
@@ -86,23 +97,56 @@ fun DashboardScreen(
                         .padding(horizontal = 24.dp, vertical = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
-                    item {
-                        DashboardHeader(
-                            greetingName = state.greetingName,
-                            todayLabel = state.todayLabel,
-                        )
-                    }
-                    item {
-                        MetricSection(
-                            metrics = state.metricCards,
-                            layoutMode = layoutMode,
-                        )
-                    }
-                    item {
-                        when (layoutMode) {
-                            DashboardLayoutMode.Expanded -> ExpandedContent(state)
-                            DashboardLayoutMode.Medium -> MediumContent(state)
-                            DashboardLayoutMode.Compact -> CompactContent(state)
+                    when (selectedDestination) {
+                        CadenceDestination.Dashboard -> {
+                            item {
+                                DashboardHeader(
+                                    greetingName = state.greetingName,
+                                    todayLabel = state.todayLabel,
+                                )
+                            }
+                            item {
+                                MetricSection(
+                                    metrics = state.metricCards,
+                                    layoutMode = layoutMode,
+                                )
+                            }
+                            item {
+                                when (layoutMode) {
+                                    DashboardLayoutMode.Expanded -> ExpandedContent(state)
+                                    DashboardLayoutMode.Medium -> MediumContent(state)
+                                    DashboardLayoutMode.Compact -> CompactContent(state)
+                                }
+                            }
+                        }
+
+                        CadenceDestination.Apps -> {
+                            item {
+                                SectionHeader(
+                                    title = "Apps",
+                                    subtitle = "All apps used today, ordered by time spent.",
+                                    todayLabel = state.todayLabel,
+                                )
+                            }
+                            item {
+                                AppsOverviewCard(
+                                    apps = state.appUsage,
+                                    totalFocusedTime = state.totalFocusedTime,
+                                )
+                            }
+                        }
+
+                        CadenceDestination.Activity -> {
+                            item {
+                                SectionHeader(
+                                    title = "Activity",
+                                    subtitle = "A quick look at your latest tracked activity.",
+                                    todayLabel = state.todayLabel,
+                                )
+                            }
+                            item {
+                                ActivityOverviewContent(state = state)
+                            }
                         }
                     }
                 }
@@ -134,15 +178,48 @@ private fun DashboardHeader(
                 color = CadenceTextSecondary,
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            HeaderPill(
-                text = todayLabel,
-                leadingIcon = Icons.Outlined.CalendarMonth,
-                width = 118.dp,
+        HeaderActions(todayLabel = todayLabel)
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    subtitle: String,
+    todayLabel: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top,
+    ) {
+        Column {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineLarge,
+                color = CadenceTextPrimary,
             )
-            HeaderSquareIcon(icon = Icons.Outlined.DarkMode)
-            HeaderSquareIcon(icon = Icons.Outlined.Settings)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyLarge,
+                color = CadenceTextSecondary,
+            )
         }
+        HeaderActions(todayLabel = todayLabel)
+    }
+}
+
+@Composable
+private fun HeaderActions(todayLabel: String) {
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        HeaderPill(
+            text = todayLabel,
+            leadingIcon = Icons.Outlined.CalendarMonth,
+            width = 118.dp,
+        )
+        HeaderSquareIcon(icon = Icons.Outlined.DarkMode)
+        HeaderSquareIcon(icon = Icons.Outlined.Settings)
     }
 }
 
@@ -252,7 +329,7 @@ private fun ExpandedContent(state: DashboardUiState) {
         ) {
             ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
             TopAppsCard(
-                apps = state.appUsage,
+                apps = state.appUsage.take(6),
                 totalFocusedTime = state.totalFocusedTime,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -285,7 +362,7 @@ private fun MediumContent(state: DashboardUiState) {
             verticalAlignment = Alignment.Top,
         ) {
             TopAppsCard(
-                apps = state.appUsage,
+                apps = state.appUsage.take(6),
                 totalFocusedTime = state.totalFocusedTime,
                 modifier = Modifier.weight(1.2f),
             )
@@ -332,12 +409,168 @@ private fun CompactContent(state: DashboardUiState) {
         )
         ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
         TopAppsCard(
-            apps = state.appUsage,
+            apps = state.appUsage.take(6),
             totalFocusedTime = state.totalFocusedTime,
             modifier = Modifier.fillMaxWidth(),
         )
         BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
         ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
         TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun ActivityOverviewContent(state: DashboardUiState) {
+    Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+        ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+        ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
+        TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun AppsOverviewCard(
+    apps: List<AppUsageData>,
+    totalFocusedTime: String,
+) {
+    DashboardCard(modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text(
+                        text = "All Apps Used",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = CadenceTextPrimary,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "$totalFocusedTime tracked across ${apps.size} apps",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFF8F9FD))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        text = "High to low",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CadenceTextPrimary,
+                    )
+                }
+            }
+
+            if (apps.isEmpty()) {
+                EmptyAppsState()
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    apps.forEach { app ->
+                        FullAppUsageRow(app = app)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FullAppUsageRow(app: AppUsageData) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .width(26.dp)
+                .height(26.dp)
+                .clip(CircleShape)
+                .background(app.color.copy(alpha = 0.18f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(10.dp)
+                    .height(10.dp)
+                    .clip(CircleShape)
+                    .background(app.color),
+            )
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = app.name,
+            style = MaterialTheme.typography.bodyMedium,
+            color = CadenceTextPrimary,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = app.duration,
+            style = MaterialTheme.typography.bodyMedium,
+            color = CadenceTextPrimary,
+            fontWeight = FontWeight.Medium,
+        )
+        Spacer(modifier = Modifier.width(14.dp))
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(6.dp)
+                .clip(CircleShape)
+                .background(CadenceGraySoft),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(app.share.coerceIn(0f, 1f))
+                    .height(6.dp)
+                    .clip(CircleShape)
+                    .background(app.color),
+            )
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = app.shareLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = CadenceTextSecondary,
+        )
+    }
+}
+
+@Composable
+private fun EmptyAppsState() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 18.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(18.dp))
+                .background(CadenceGraySoft.copy(alpha = 0.6f))
+                .padding(14.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Apps,
+                contentDescription = null,
+                tint = CadencePurple,
+            )
+        }
+        Text(
+            text = "No app activity yet",
+            style = MaterialTheme.typography.titleMedium,
+            color = CadenceTextPrimary,
+        )
+        Text(
+            text = "App usage will appear here as soon as tracking captures it.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = CadenceTextSecondary,
+            textAlign = TextAlign.Center,
+        )
     }
 }

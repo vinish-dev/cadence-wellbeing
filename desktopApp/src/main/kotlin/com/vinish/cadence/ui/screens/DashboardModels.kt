@@ -298,7 +298,7 @@ private fun List<AppUsage>.toDashboardAppUsage(): List<AppUsageData> {
         CadenceGraySoft,
     )
 
-    return take(6).mapIndexed { index, usage ->
+    return mapIndexed { index, usage ->
         val share = usage.durationSeconds.toFloat() / totalSeconds.toFloat()
         AppUsageData(
             name = usage.appName,
