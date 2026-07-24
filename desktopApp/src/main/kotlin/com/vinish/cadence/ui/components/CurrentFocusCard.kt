@@ -32,6 +32,9 @@ import com.vinish.cadence.ui.theme.CadenceTextSecondary
 
 @Composable
 fun CurrentFocusCard(
+    appName: String,
+    windowTitle: String,
+    activeSessionDuration: String,
     details: List<FocusDetail>,
     modifier: Modifier = Modifier,
 ) {
@@ -79,12 +82,12 @@ fun CurrentFocusCard(
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(14.dp))
                 Column {
                     Text(
-                        text = "Brave Browser",
+                        text = appName,
                         style = MaterialTheme.typography.titleMedium,
                         color = CadenceTextPrimary,
                     )
                     Text(
-                        text = "Kotlin Docs - Coroutines Guide",
+                        text = windowTitle,
                         style = MaterialTheme.typography.bodyMedium,
                         color = CadenceTextSecondary,
                     )
@@ -92,7 +95,7 @@ fun CurrentFocusCard(
             }
             Spacer(modifier = Modifier.height(26.dp))
             Text(
-                text = "01:24:17",
+                text = activeSessionDuration,
                 style = MaterialTheme.typography.headlineLarge,
                 color = CadenceTextPrimary,
                 fontWeight = FontWeight.Bold,

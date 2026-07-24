@@ -7,6 +7,8 @@ import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.vinish.cadence.tracking.AppUsage
+import com.vinish.cadence.tracking.TrackerState
 import com.vinish.cadence.ui.theme.CadenceBlue
 import com.vinish.cadence.ui.theme.CadenceBlueSoft
 import com.vinish.cadence.ui.theme.CadenceGraySoft
@@ -17,6 +19,10 @@ import com.vinish.cadence.ui.theme.CadenceOrange
 import com.vinish.cadence.ui.theme.CadenceOrangeSoft
 import com.vinish.cadence.ui.theme.CadencePurple
 import com.vinish.cadence.ui.theme.CadencePurpleSoft
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import kotlin.math.roundToInt
 
 data class MetricCardData(
     val title: String,
@@ -62,6 +68,7 @@ data class BreakInfoData(
 )
 
 data class TrackingStatusData(
+    val isActive: Boolean,
     val startedAt: String,
     val trackedToday: String,
     val actionLabel: String,
@@ -70,10 +77,14 @@ data class TrackingStatusData(
 data class DashboardUiState(
     val greetingName: String,
     val todayLabel: String,
+    val activeAppName: String,
+    val activeWindowTitle: String,
+    val activeSessionDuration: String,
     val metricCards: List<MetricCardData>,
     val activitySeries: List<ChartPointSet>,
     val currentFocusDetails: List<FocusDetail>,
     val appUsage: List<AppUsageData>,
+    val totalFocusedTime: String,
     val timeline: List<TimelineSegmentData>,
     val breakInfo: BreakInfoData,
     val trackingStatus: TrackingStatusData,
@@ -82,6 +93,9 @@ data class DashboardUiState(
 fun mockDashboardState(): DashboardUiState = DashboardUiState(
     greetingName = "Vinish",
     todayLabel = "May 18, 2025",
+    activeAppName = "Brave Browser",
+    activeWindowTitle = "Kotlin Docs - Coroutines Guide",
+    activeSessionDuration = "01:24:17",
     metricCards = listOf(
         MetricCardData(
             title = "Keys Typed",
@@ -154,6 +168,7 @@ fun mockDashboardState(): DashboardUiState = DashboardUiState(
         AppUsageData("Spotify", "21m", "7%", 0.07f, CadenceGreen),
         AppUsageData("Others", "14m", "5%", 0.05f, CadenceGraySoft),
     ),
+    totalFocusedTime = "4h 22m",
     timeline = listOf(
         TimelineSegmentData("IntelliJ IDEA", "9:00 AM", 2.6f, CadencePurple),
         TimelineSegmentData("Brave", "9:45 AM", 1.2f, CadenceGreen),
@@ -167,8 +182,190 @@ fun mockDashboardState(): DashboardUiState = DashboardUiState(
         nextBreakMinutes = 18,
     ),
     trackingStatus = TrackingStatusData(
+        isActive = true,
         startedAt = "9:01 AM",
         trackedToday = "5h 21m",
         actionLabel = "Pause tracking",
     ),
 )
+
+fun dashboardStateFromTracking(
+    typingCount: Int,
+    trackerState: TrackerState,
+): DashboardUiState {
+    val totalTrackedSeconds = trackerState.appUsages.sumOf(AppUsage::durationSeconds)
+    val activeSessionSeconds = trackerState.appUsages
+        .firstOrNull { it.appName == trackerState.activeApp }
+        ?.durationSeconds
+        ?: 0L
+    val currentFocusMinutes = (activeSessionSeconds / 60).toInt()
+    val nextBreakMinutes = (50 - (currentFocusMinutes % 50)).let { remaining ->
+        if (remaining == 50) 0 else remaining
+    }
+    val activeAppName = trackerState.activeApp.takeUnless { it == "None" } ?: "No active app"
+    val activeWindowTitle = trackerState.activeWindowTitle.ifBlank { "Waiting for app activity" }
+
+    return DashboardUiState(
+        greetingName = "Vinish",
+        todayLabel = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)),
+        activeAppName = activeAppName,
+        activeWindowTitle = activeWindowTitle,
+        activeSessionDuration = formatClockDuration(activeSessionSeconds),
+        metricCards = listOf(
+            MetricCardData(
+                title = "Keys Typed",
+                value = typingCount.formatWithGrouping(),
+                trend = "",
+                trendPositive = true,
+                caption = "Live today",
+                icon = Icons.Outlined.Keyboard,
+                iconTint = CadencePurple,
+                iconBackground = CadencePurpleSoft,
+            ),
+            MetricCardData(
+                title = "Focused Time",
+                value = formatCompactDuration(totalTrackedSeconds),
+                trend = "",
+                trendPositive = true,
+                caption = "Tracked today",
+                icon = Icons.Outlined.Schedule,
+                iconTint = CadenceGreen,
+                iconBackground = CadenceGreenSoft,
+            ),
+            MetricCardData(
+                title = "Apps Used",
+                value = trackerState.appUsages.size.toString(),
+                trend = "",
+                trendPositive = true,
+                caption = "Unique apps today",
+                icon = Icons.Outlined.Apps,
+                iconTint = CadenceBlue,
+                iconBackground = CadenceBlueSoft,
+            ),
+            MetricCardData(
+                title = "Focus Score",
+                value = focusScore(typingCount, totalTrackedSeconds),
+                trend = "",
+                trendPositive = true,
+                caption = "Based on activity",
+                icon = Icons.Outlined.RadioButtonChecked,
+                iconTint = CadencePurple,
+                iconBackground = CadencePurpleSoft,
+            ),
+        ),
+        activitySeries = mockDashboardState().activitySeries,
+        currentFocusDetails = listOf(
+            FocusDetail(typingCount.formatWithGrouping(), "Keys typed", CadencePurple),
+            FocusDetail(formatCompactDuration(totalTrackedSeconds), "Tracked time", CadenceGreen),
+            FocusDetail(trackerState.appUsages.size.toString(), "Apps used", CadenceBlue),
+        ),
+        appUsage = trackerState.appUsages.toDashboardAppUsage(),
+        totalFocusedTime = formatCompactDuration(totalTrackedSeconds),
+        timeline = trackerState.appUsages.toTimelineSegments(),
+        breakInfo = BreakInfoData(
+            currentFocusMinutes = currentFocusMinutes,
+            nextBreakMinutes = nextBreakMinutes,
+        ),
+        trackingStatus = TrackingStatusData(
+            isActive = true,
+            startedAt = "Now",
+            trackedToday = formatCompactDuration(totalTrackedSeconds),
+            actionLabel = "Tracking live",
+        ),
+    )
+}
+
+private fun List<AppUsage>.toDashboardAppUsage(): List<AppUsageData> {
+    if (isEmpty()) {
+        return listOf(
+            AppUsageData(
+                name = "Waiting for activity",
+                duration = "0m",
+                shareLabel = "0%",
+                share = 0f,
+                color = CadenceGraySoft,
+            ),
+        )
+    }
+
+    val totalSeconds = sumOf(AppUsage::durationSeconds).coerceAtLeast(1L)
+    val palette = listOf(
+        CadencePurple,
+        Color(0xFFFF7A1A),
+        CadenceBlue,
+        CadenceOrange,
+        CadenceGreen,
+        CadenceGraySoft,
+    )
+
+    return take(6).mapIndexed { index, usage ->
+        val share = usage.durationSeconds.toFloat() / totalSeconds.toFloat()
+        AppUsageData(
+            name = usage.appName,
+            duration = usage.formattedDuration,
+            shareLabel = "${(share * 100).roundToInt()}%",
+            share = share,
+            color = palette[index % palette.size],
+        )
+    }
+}
+
+private fun List<AppUsage>.toTimelineSegments(): List<TimelineSegmentData> {
+    if (isEmpty()) {
+        return listOf(
+            TimelineSegmentData(
+                label = "",
+                startTime = "No activity yet",
+                weight = 1f,
+                color = CadenceGraySoft,
+            ),
+        )
+    }
+
+    val palette = listOf(
+        CadencePurple,
+        CadenceGreen,
+        CadenceBlue,
+        CadenceOrange,
+        CadencePurpleSoft,
+        CadenceGreenSoft,
+    )
+
+    return take(6).mapIndexed { index, usage ->
+        TimelineSegmentData(
+            label = usage.appName,
+            startTime = usage.formattedDuration,
+            weight = usage.durationSeconds.coerceAtLeast(1L).toFloat(),
+            color = palette[index % palette.size],
+        )
+    }
+}
+
+private fun Int.formatWithGrouping(): String = "%,d".format(Locale.ENGLISH, this)
+
+private fun formatCompactDuration(seconds: Long): String {
+    if (seconds <= 0L) return "0m"
+
+    val totalMinutes = seconds / 60
+    if (totalMinutes < 60) return "${totalMinutes}m"
+
+    val hours = totalMinutes / 60
+    val minutes = totalMinutes % 60
+    return if (minutes == 0L) "${hours}h" else "${hours}h ${minutes}m"
+}
+
+private fun formatClockDuration(seconds: Long): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val remainingSeconds = seconds % 60
+    return "%02d:%02d:%02d".format(Locale.ENGLISH, hours, minutes, remainingSeconds)
+}
+
+private fun focusScore(typingCount: Int, totalTrackedSeconds: Long): String {
+    if (totalTrackedSeconds <= 0L) return "0%"
+
+    val score = ((typingCount / totalTrackedSeconds.toFloat()) * 60f)
+        .roundToInt()
+        .coerceIn(0, 100)
+    return "$score%"
+}

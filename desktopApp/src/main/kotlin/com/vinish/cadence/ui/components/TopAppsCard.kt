@@ -33,6 +33,7 @@ import com.vinish.cadence.ui.theme.CadenceTextSecondary
 @Composable
 fun TopAppsCard(
     apps: List<AppUsageData>,
+    totalFocusedTime: String,
     modifier: Modifier = Modifier,
 ) {
     DashboardCard(modifier = modifier) {
@@ -76,6 +77,7 @@ fun TopAppsCard(
                 }
                 FocusDonut(
                     apps = apps,
+                    totalFocusedTime = totalFocusedTime,
                     modifier = Modifier.weight(0.8f),
                 )
             }
@@ -143,6 +145,7 @@ private fun AppUsageRow(app: AppUsageData) {
 @Composable
 private fun FocusDonut(
     apps: List<AppUsageData>,
+    totalFocusedTime: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -177,7 +180,7 @@ private fun FocusDonut(
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "4h 22m",
+                text = totalFocusedTime,
                 style = MaterialTheme.typography.headlineMedium,
                 color = CadenceTextPrimary,
                 fontWeight = FontWeight.Bold,

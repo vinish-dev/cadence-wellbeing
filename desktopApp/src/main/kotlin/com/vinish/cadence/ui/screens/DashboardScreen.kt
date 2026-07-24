@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,10 +51,9 @@ private enum class DashboardLayoutMode {
 
 @Composable
 fun DashboardScreen(
+    state: DashboardUiState,
     modifier: Modifier = Modifier,
 ) {
-    val state = remember { mockDashboardState() }
-
     Surface(
         modifier = modifier.fillMaxSize(),
         color = CadenceBackground,
@@ -253,14 +251,24 @@ private fun ExpandedContent(state: DashboardUiState) {
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
             ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
-            TopAppsCard(apps = state.appUsage, modifier = Modifier.fillMaxWidth())
+            TopAppsCard(
+                apps = state.appUsage,
+                totalFocusedTime = state.totalFocusedTime,
+                modifier = Modifier.fillMaxWidth(),
+            )
             ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
         }
         Column(
             modifier = Modifier.width(320.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            CurrentFocusCard(details = state.currentFocusDetails, modifier = Modifier.fillMaxWidth())
+            CurrentFocusCard(
+                appName = state.activeAppName,
+                windowTitle = state.activeWindowTitle,
+                activeSessionDuration = state.activeSessionDuration,
+                details = state.currentFocusDetails,
+                modifier = Modifier.fillMaxWidth(),
+            )
             BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
             TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
         }
@@ -278,13 +286,20 @@ private fun MediumContent(state: DashboardUiState) {
         ) {
             TopAppsCard(
                 apps = state.appUsage,
+                totalFocusedTime = state.totalFocusedTime,
                 modifier = Modifier.weight(1.2f),
             )
             Column(
                 modifier = Modifier.weight(0.9f),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                CurrentFocusCard(details = state.currentFocusDetails, modifier = Modifier.fillMaxWidth())
+                CurrentFocusCard(
+                    appName = state.activeAppName,
+                    windowTitle = state.activeWindowTitle,
+                    activeSessionDuration = state.activeSessionDuration,
+                    details = state.currentFocusDetails,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
             }
         }
@@ -308,9 +323,19 @@ private fun MediumContent(state: DashboardUiState) {
 @Composable
 private fun CompactContent(state: DashboardUiState) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-        CurrentFocusCard(details = state.currentFocusDetails, modifier = Modifier.fillMaxWidth())
+        CurrentFocusCard(
+            appName = state.activeAppName,
+            windowTitle = state.activeWindowTitle,
+            activeSessionDuration = state.activeSessionDuration,
+            details = state.currentFocusDetails,
+            modifier = Modifier.fillMaxWidth(),
+        )
         ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
-        TopAppsCard(apps = state.appUsage, modifier = Modifier.fillMaxWidth())
+        TopAppsCard(
+            apps = state.appUsage,
+            totalFocusedTime = state.totalFocusedTime,
+            modifier = Modifier.fillMaxWidth(),
+        )
         BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
         ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
         TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
