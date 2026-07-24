@@ -12,6 +12,7 @@ import com.vinish.cadence.tracking.KeyboardTracker
 import com.vinish.cadence.ui.navigation.CadenceDestination
 import com.vinish.cadence.ui.screens.DashboardScreen
 import com.vinish.cadence.ui.screens.dashboardStateFromTracking
+import com.vinish.cadence.tracking.SessionManager
 import com.vinish.cadence.ui.theme.CadenceTheme
 
 @Composable
@@ -23,10 +24,12 @@ fun App() {
 
     val trackerState by AppTracker.state.collectAsState()
     val typingCount by KeyboardTracker.typingCount.collectAsState()
-    val dashboardState = remember(trackerState, typingCount) {
+    val currentSession by SessionManager.currentSession.collectAsState()
+    val dashboardState = remember(trackerState, typingCount, currentSession) {
         dashboardStateFromTracking(
             typingCount = typingCount,
             trackerState = trackerState,
+            currentSession = currentSession,
         )
     }
     var selectedDestination by remember { mutableStateOf(CadenceDestination.Dashboard) }

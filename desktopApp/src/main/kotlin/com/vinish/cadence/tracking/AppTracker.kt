@@ -2,9 +2,13 @@ package com.vinish.cadence.tracking
 
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.ptr.IntByReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.io.File
+import java.time.Instant
 import kotlin.concurrent.thread
 
 data class AppUsage(
@@ -24,93 +28,109 @@ object AppTracker {
     val state = _state.asStateFlow()
 
     private var running = false
+    private const val IDLE_TIMEOUT_SECONDS = 300L
 
     fun start() {
         synchronized(this) {
             if (running) return
             running = true
         }
+
         thread(start = true, isDaemon = true, name = "AppTrackerThread") {
             trackLoop()
         }
     }
 
     private fun trackLoop() {
-        val usagesMap = mutableMapOf<String, Long>() // appName -> durationSeconds
         var lastAppName: String? = null
-        var lastTime = System.currentTimeMillis()
+        var lastWindowTitle: String? = null
+        var isIdle = false
 
         while (running) {
             try {
-                val hwnd = User32.INSTANCE.GetForegroundWindow()
-                if (hwnd != null) {
-                    // Get window text
-                    val titleLength = User32.INSTANCE.GetWindowTextLength(hwnd)
-                    val windowTitle = if (titleLength > 0) {
-                        val buffer = CharArray(titleLength + 1)
-                        User32.INSTANCE.GetWindowText(hwnd, buffer, buffer.size)
-                        String(buffer, 0, titleLength)
-                    } else {
-                        ""
+                val idleSeconds = SystemTracker.getIdleTimeSeconds()
+
+                if (idleSeconds > IDLE_TIMEOUT_SECONDS) {
+                    if (!isIdle) {
+                        isIdle = true
+                        // Calculate the timestamp when the idle period actually started
+                        val idleStart = Instant.now().minusSeconds(idleSeconds)
+                        SessionManager.onIdleTimeout(idleStart)
+                        lastAppName = null
+                        lastWindowTitle = null
+                    }
+                } else {
+                    if (isIdle) {
+                        // User came back from idle
+                        isIdle = false
                     }
 
-                    // Get PID
-                    val processId = IntByReference()
-                    User32.INSTANCE.GetWindowThreadProcessId(hwnd, processId)
-                    val pid = processId.value
+                    val hwnd = User32.INSTANCE.GetForegroundWindow()
+                    if (hwnd != null) {
+                        // Get window text
+                        val titleLength = User32.INSTANCE.GetWindowTextLength(hwnd)
+                        val windowTitle = if (titleLength > 0) {
+                            val buffer = CharArray(titleLength + 1)
+                            User32.INSTANCE.GetWindowText(hwnd, buffer, buffer.size)
+                            String(buffer, 0, titleLength)
+                        } else {
+                            ""
+                        }
 
-                    // Get app name using Java 9+ ProcessHandle
-                    val exeName = ProcessHandle.of(pid.toLong())
-                        .flatMap { it.info().command() }
-                        .map { File(it).name }
-                        .orElse("Unknown")
+                        // Get PID
+                        val processId = IntByReference()
+                        User32.INSTANCE.GetWindowThreadProcessId(hwnd, processId)
+                        val pid = processId.value
 
-                    val friendlyAppName = getFriendlyAppName(exeName)
+                        // Get app name
+                        val exeName = ProcessHandle.of(pid.toLong())
+                            .flatMap { it.info().command() }
+                            .map { File(it).name }
+                            .orElse("Unknown")
 
-                    // Calculate elapsed time in seconds
-                    val currentTime = System.currentTimeMillis()
-                    val elapsedSeconds = (currentTime - lastTime) / 1000
+                        val friendlyAppName = getFriendlyAppName(exeName)
 
-                    if (elapsedSeconds > 0) {
-                        lastTime = currentTime
-                        if (lastAppName != null) {
-                            usagesMap[lastAppName] = (usagesMap[lastAppName] ?: 0L) + elapsedSeconds
+                        // Check if app or title changed
+                        if (friendlyAppName != lastAppName || windowTitle != lastWindowTitle) {
+                            SessionManager.onAppChanged(friendlyAppName, windowTitle, Instant.now())
+                            lastAppName = friendlyAppName
+                            lastWindowTitle = windowTitle
+                        }
+                    } else {
+                        // No active window
+                        if (lastAppName != "None") {
+                            SessionManager.onAppChanged("None", "", Instant.now())
+                            lastAppName = "None"
+                            lastWindowTitle = ""
                         }
                     }
+                }
 
-                    // Update currently active app
-                    lastAppName = friendlyAppName
+                // Update TrackerState for the UI every second
+                val session = SessionManager.currentSession.value
+                if (session != null) {
+                    val segments = session.segments
+                    val lastSegment = segments.lastOrNull()
 
+                    // Aggregate usage for TrackerState.appUsages
+                    val usagesMap = mutableMapOf<String, Long>()
+                    for (seg in segments) {
+                        usagesMap[seg.appName] = (usagesMap[seg.appName] ?: 0L) + seg.durationSeconds
+                    }
                     val usagesList = usagesMap.map { (name, duration) ->
                         AppUsage(name, duration, formatDuration(duration))
                     }.sortedByDescending { it.durationSeconds }
 
                     _state.value = TrackerState(
-                        activeApp = friendlyAppName,
-                        activeWindowTitle = windowTitle,
+                        activeApp = lastSegment?.appName ?: "None",
+                        activeWindowTitle = lastSegment?.windowTitle ?: "",
                         appUsages = usagesList
                     )
                 } else {
-                    // No active window
-                    val currentTime = System.currentTimeMillis()
-                    val elapsedSeconds = (currentTime - lastTime) / 1000
-
-                    if (elapsedSeconds > 0) {
-                        lastTime = currentTime
-                        if (lastAppName != null) {
-                            usagesMap[lastAppName] = (usagesMap[lastAppName] ?: 0L) + elapsedSeconds
-                        }
-                    }
-                    lastAppName = null
-
-                    val usagesList = usagesMap.map { (name, duration) ->
-                        AppUsage(name, duration, formatDuration(duration))
-                    }.sortedByDescending { it.durationSeconds }
-
                     _state.value = TrackerState(
                         activeApp = "None",
                         activeWindowTitle = "",
-                        appUsages = usagesList
+                        appUsages = emptyList()
                     )
                 }
             } catch (e: Exception) {

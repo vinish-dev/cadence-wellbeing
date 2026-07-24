@@ -21,7 +21,7 @@ fun DashboardCard(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = CadenceSurface),
         border = BorderStroke(1.dp, CadenceBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Box(modifier = Modifier.padding(20.dp), content = content)
     }

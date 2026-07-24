@@ -23,6 +23,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
+import com.vinish.cadence.tracking.models.Session
+import com.vinish.cadence.tracking.models.Segment
+import java.time.ZoneId
 
 data class MetricCardData(
     val title: String,
@@ -192,12 +195,10 @@ fun mockDashboardState(): DashboardUiState = DashboardUiState(
 fun dashboardStateFromTracking(
     typingCount: Int,
     trackerState: TrackerState,
+    currentSession: Session? = null,
 ): DashboardUiState {
     val totalTrackedSeconds = trackerState.appUsages.sumOf(AppUsage::durationSeconds)
-    val activeSessionSeconds = trackerState.appUsages
-        .firstOrNull { it.appName == trackerState.activeApp }
-        ?.durationSeconds
-        ?: 0L
+    val activeSessionSeconds = currentSession?.durationSeconds ?: 0L
     val currentFocusMinutes = (activeSessionSeconds / 60).toInt()
     val nextBreakMinutes = (50 - (currentFocusMinutes % 50)).let { remaining ->
         if (remaining == 50) 0 else remaining
@@ -261,7 +262,7 @@ fun dashboardStateFromTracking(
         ),
         appUsage = trackerState.appUsages.toDashboardAppUsage(),
         totalFocusedTime = formatCompactDuration(totalTrackedSeconds),
-        timeline = trackerState.appUsages.toTimelineSegments(),
+        timeline = currentSession?.segments?.toTimelineSegments() ?: emptyList(),
         breakInfo = BreakInfoData(
             currentFocusMinutes = currentFocusMinutes,
             nextBreakMinutes = nextBreakMinutes,
@@ -310,7 +311,7 @@ private fun List<AppUsage>.toDashboardAppUsage(): List<AppUsageData> {
     }
 }
 
-private fun List<AppUsage>.toTimelineSegments(): List<TimelineSegmentData> {
+private fun List<Segment>.toTimelineSegments(): List<TimelineSegmentData> {
     if (isEmpty()) {
         return listOf(
             TimelineSegmentData(
@@ -331,11 +332,13 @@ private fun List<AppUsage>.toTimelineSegments(): List<TimelineSegmentData> {
         CadenceGreenSoft,
     )
 
-    return take(6).mapIndexed { index, usage ->
+    val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+
+    return takeLast(6).mapIndexed { index, segment ->
         TimelineSegmentData(
-            label = usage.appName,
-            startTime = usage.formattedDuration,
-            weight = usage.durationSeconds.coerceAtLeast(1L).toFloat(),
+            label = segment.appName,
+            startTime = timeFormatter.format(segment.startTime),
+            weight = segment.durationSeconds.coerceAtLeast(1L).toFloat(),
             color = palette[index % palette.size],
         )
     }

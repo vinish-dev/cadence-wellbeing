@@ -42,7 +42,7 @@ fun TrackingCard(
                 )
                 androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(4.dp))
                 Text(
-                    text = if (data.isActive) "Tracking active" else "Tracking paused",
+                    text = if (data.isActive) "Session active" else "Session paused",
                     style = MaterialTheme.typography.labelLarge,
                     color = CadenceTextPrimary,
                 )

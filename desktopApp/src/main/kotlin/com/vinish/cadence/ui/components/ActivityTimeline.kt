@@ -34,7 +34,7 @@ import com.vinish.cadence.ui.theme.CadenceTextPrimary
 import com.vinish.cadence.ui.theme.CadenceTextSecondary
 
 private val TimelineBlockHeight = 28.dp
-private val TimelineBlockMinWidth = 28.dp
+private val TimelineBlockMinWidth = 48.dp
 private val TimelineLabelMinWidth = 52.dp
 
 @Composable
@@ -46,7 +46,7 @@ fun ActivityTimeline(
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Today's Activity Timeline",
+                    text = "Session Timeline",
                     style = MaterialTheme.typography.titleMedium,
                     color = CadenceTextPrimary,
                 )
