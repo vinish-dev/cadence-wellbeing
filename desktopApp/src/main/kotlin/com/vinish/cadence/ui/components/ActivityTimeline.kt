@@ -3,13 +3,16 @@ package com.vinish.cadence.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -22,11 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vinish.cadence.ui.screens.TimelineSegmentData
 import com.vinish.cadence.ui.theme.CadenceGraySoft
 import com.vinish.cadence.ui.theme.CadenceTextPrimary
 import com.vinish.cadence.ui.theme.CadenceTextSecondary
+
+private val TimelineBlockHeight = 28.dp
+private val TimelineBlockMinWidth = 28.dp
+private val TimelineLabelMinWidth = 52.dp
 
 @Composable
 fun ActivityTimeline(
@@ -52,22 +61,28 @@ fun ActivityTimeline(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(TimelineBlockHeight),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 segments.forEach { segment ->
-                    Box(
+                    BoxWithConstraints(
                         modifier = Modifier
                             .weight(segment.weight)
+                            .widthIn(min = TimelineBlockMinWidth)
+                            .fillMaxHeight()
                             .clip(RoundedCornerShape(10.dp))
                             .background(if (segment.label.isBlank()) CadenceGraySoft else segment.color),
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (segment.label.isNotBlank()) {
+                        if (segment.label.isNotBlank() && maxWidth >= TimelineLabelMinWidth) {
                             Text(
                                 text = segment.label,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(horizontal = 8.dp),
                             )
                         }
                     }
