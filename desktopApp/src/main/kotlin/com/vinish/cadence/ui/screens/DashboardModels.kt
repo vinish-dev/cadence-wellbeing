@@ -327,9 +327,9 @@ private fun List<Segment>.toTimelineSegments(): List<TimelineSegmentData> {
         CadencePurple,
         CadenceGreen,
         CadenceBlue,
-        CadenceOrange,
-        CadencePurpleSoft,
-        CadenceGreenSoft,
+        Color(0xFFFF7A1A),
+        Color(0xFF7C68FF),
+        Color(0xFF5BD2AF),
     )
 
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())

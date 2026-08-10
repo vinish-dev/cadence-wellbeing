@@ -137,7 +137,7 @@ private fun ActivityLineChart(series: List<ChartPointSet>) {
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(180.dp),
     ) {
         val gridLines = 4
         repeat(gridLines + 1) { index ->
