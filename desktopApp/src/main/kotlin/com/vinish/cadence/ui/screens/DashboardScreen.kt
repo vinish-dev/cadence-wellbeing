@@ -274,7 +274,7 @@ private fun MetricSection(
                 metrics.forEach { metric ->
                     MetricCard(
                         data = metric,
-                        modifier = Modifier.weight(1f).height(140.dp),
+                        modifier = Modifier.weight(1f),
                     )
                 }
             }
@@ -290,7 +290,7 @@ private fun MetricSection(
                         rowItems.forEach { metric ->
                             MetricCard(
                                 data = metric,
-                                modifier = Modifier.weight(1f).height(140.dp),
+                                modifier = Modifier.weight(1f),
                             )
                         }
                         if (rowItems.size == 1) {
@@ -306,9 +306,7 @@ private fun MetricSection(
                 metrics.forEach { metric ->
                     MetricCard(
                         data = metric,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(140.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }

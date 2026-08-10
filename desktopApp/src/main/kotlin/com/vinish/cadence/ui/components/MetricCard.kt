@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,14 +34,20 @@ fun MetricCard(
     modifier: Modifier = Modifier,
 ) {
     DashboardCard(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
+                Text(
+                    text = data.value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = CadenceTextPrimary,
+                )
                 Box(
                     modifier = Modifier
-                        .size(38.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
                         .background(data.iconBackground),
                     contentAlignment = Alignment.Center,
@@ -49,48 +56,44 @@ fun MetricCard(
                         imageVector = data.icon,
                         contentDescription = data.title,
                         tint = data.iconTint,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = data.title,
                 style = MaterialTheme.typography.bodyMedium,
                 color = CadenceTextSecondary,
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = data.value,
-                style = MaterialTheme.typography.headlineMedium,
-                color = CadenceTextPrimary,
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (data.trend.isNotBlank()) {
-                    val trendColor = if (data.trendPositive) Color(0xFF1DBA68) else Color(0xFFE04F5F)
-                    Icon(
-                        imageVector = if (data.trendPositive) Icons.Rounded.ArrowUpward else Icons.Rounded.ArrowDownward,
-                        contentDescription = null,
-                        tint = trendColor,
-                        modifier = Modifier.size(14.dp),
-                    )
-                    Text(
-                        text = data.trend,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = trendColor,
-                    )
-                    Text(
-                        text = "  ${data.caption}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = CadenceTextSecondary,
-                    )
-                } else {
-                    Text(
-                        text = data.caption,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = CadenceTextSecondary,
-                    )
+            if (data.trend.isNotBlank() || data.caption.isNotBlank()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (data.trend.isNotBlank()) {
+                        val trendColor = if (data.trendPositive) Color(0xFF1DBA68) else Color(0xFFE04F5F)
+                        Icon(
+                            imageVector = if (data.trendPositive) Icons.Rounded.ArrowUpward else Icons.Rounded.ArrowDownward,
+                            contentDescription = null,
+                            tint = trendColor,
+                            modifier = Modifier.size(14.dp),
+                        )
+                        Text(
+                            text = data.trend,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = trendColor,
+                        )
+                        Text(
+                            text = "  ${data.caption}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = CadenceTextSecondary,
+                        )
+                    } else {
+                        Text(
+                            text = data.caption,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = CadenceTextSecondary,
+                        )
+                    }
                 }
             }
         }
