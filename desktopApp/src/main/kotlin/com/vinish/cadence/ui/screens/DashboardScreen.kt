@@ -419,9 +419,21 @@ private fun CompactContent(state: DashboardUiState) {
 @Composable
 private fun ActivityOverviewContent(state: DashboardUiState) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-        ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
-        ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
-        TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+        if (state.sessions.isEmpty()) {
+            Text(
+                text = "No sessions recorded yet.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = CadenceTextSecondary,
+                modifier = Modifier.padding(18.dp)
+            )
+        } else {
+            state.sessions.forEach { session ->
+                com.vinish.cadence.ui.components.SessionCard(
+                    session = session,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
 

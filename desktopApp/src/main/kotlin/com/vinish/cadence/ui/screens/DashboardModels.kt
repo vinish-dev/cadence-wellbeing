@@ -77,6 +77,14 @@ data class TrackingStatusData(
     val actionLabel: String,
 )
 
+data class SessionSummaryData(
+    val name: String,
+    val timeRange: String,
+    val duration: String,
+    val timeline: List<TimelineSegmentData>,
+    val apps: List<AppUsageData>,
+)
+
 data class DashboardUiState(
     val greetingName: String,
     val todayLabel: String,
@@ -91,6 +99,7 @@ data class DashboardUiState(
     val timeline: List<TimelineSegmentData>,
     val breakInfo: BreakInfoData,
     val trackingStatus: TrackingStatusData,
+    val sessions: List<SessionSummaryData>,
 )
 
 fun mockDashboardState(): DashboardUiState = DashboardUiState(
@@ -190,6 +199,36 @@ fun mockDashboardState(): DashboardUiState = DashboardUiState(
         trackedToday = "5h 21m",
         actionLabel = "Pause tracking",
     ),
+    sessions = listOf(
+        SessionSummaryData(
+            name = "Session 2",
+            timeRange = "4:43 PM – 5:12 PM",
+            duration = "29 min",
+            timeline = listOf(
+                TimelineSegmentData("IntelliJ IDEA", "4:43 PM", 1.8f, CadencePurple),
+                TimelineSegmentData("Brave", "5:01 PM", 0.6f, CadenceGreen),
+                TimelineSegmentData("Notepad", "5:08 PM", 0.4f, CadenceOrange)
+            ),
+            apps = listOf(
+                AppUsageData("IntelliJ IDEA", "18m", "62%", 0.62f, CadencePurple),
+                AppUsageData("Brave Browser", "6m", "21%", 0.21f, CadenceGreen),
+                AppUsageData("Notepad", "4m", "14%", 0.14f, CadenceOrange)
+            )
+        ),
+        SessionSummaryData(
+            name = "Session 1",
+            timeRange = "4:07 PM – 4:35 PM",
+            duration = "28 min",
+            timeline = listOf(
+                TimelineSegmentData("IntelliJ IDEA", "4:07 PM", 2.0f, CadencePurple),
+                TimelineSegmentData("VS Code", "4:27 PM", 0.8f, CadenceBlue)
+            ),
+            apps = listOf(
+                AppUsageData("IntelliJ IDEA", "20m", "71%", 0.71f, CadencePurple),
+                AppUsageData("VS Code", "8m", "29%", 0.29f, CadenceBlue)
+            )
+        )
+    )
 )
 
 fun dashboardStateFromTracking(
@@ -273,6 +312,7 @@ fun dashboardStateFromTracking(
             trackedToday = formatCompactDuration(totalTrackedSeconds),
             actionLabel = "Tracking live",
         ),
+        sessions = emptyList(),
     )
 }
 
