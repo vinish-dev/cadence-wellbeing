@@ -58,6 +58,10 @@ fun ActivityTimeline(
                 )
             }
             Spacer(modifier = Modifier.height(18.dp))
+            val maxWeight = segments.maxOfOrNull { it.weight } ?: 1f
+            // Ensure no segment shrinks smaller than 15% of the largest segment
+            val minWeightThreshold = maxWeight * 0.15f
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,10 +69,10 @@ fun ActivityTimeline(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 segments.forEach { segment ->
+                    val adjustedWeight = segment.weight.coerceAtLeast(minWeightThreshold)
                     BoxWithConstraints(
                         modifier = Modifier
-                            .weight(segment.weight)
-                            .widthIn(min = TimelineBlockMinWidth)
+                            .weight(adjustedWeight)
                             .fillMaxHeight()
                             .clip(RoundedCornerShape(10.dp))
                             .background(if (segment.label.isBlank()) CadenceGraySoft else segment.color),
@@ -91,9 +95,10 @@ fun ActivityTimeline(
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 segments.forEach { segment ->
+                    val adjustedWeight = segment.weight.coerceAtLeast(minWeightThreshold)
                     Text(
                         text = segment.startTime,
-                        modifier = Modifier.weight(segment.weight),
+                        modifier = Modifier.weight(adjustedWeight),
                         style = MaterialTheme.typography.bodySmall,
                         color = CadenceTextSecondary,
                         textAlign = TextAlign.Start,

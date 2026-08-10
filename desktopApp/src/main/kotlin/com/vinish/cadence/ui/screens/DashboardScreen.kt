@@ -378,22 +378,16 @@ private fun MediumContent(state: DashboardUiState) {
                     modifier = Modifier.fillMaxWidth(),
                 )
                 BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
+                TrackingCard(
+                    data = state.trackingStatus,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
-        Row(
+        ActivityTimeline(
+            segments = state.timeline,
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(18.dp),
-            verticalAlignment = Alignment.Top,
-        ) {
-            ActivityTimeline(
-                segments = state.timeline,
-                modifier = Modifier.weight(1.2f),
-            )
-            TrackingCard(
-                data = state.trackingStatus,
-                modifier = Modifier.weight(0.9f),
-            )
-        }
+        )
     }
 }
 
@@ -414,8 +408,8 @@ private fun CompactContent(state: DashboardUiState) {
             modifier = Modifier.fillMaxWidth(),
         )
         BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
-        ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
         TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+        ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
     }
 }
 
