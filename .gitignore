@@ -17,3 +17,7 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+desktopApp/src/main/kotlin/com/vinish/cadence/practise.kt
+desktopApp/src/main/kotlin/com/vinish/cadence/practise2.kt
+desktopApp/src/main/kotlin/com/vinish/cadence/practise3.kt
+.vscode/settings.json

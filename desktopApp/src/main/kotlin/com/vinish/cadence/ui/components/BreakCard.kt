@@ -85,18 +85,21 @@ fun BreakCard(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "You've been focused\nfor ${data.currentFocusMinutes} minutes.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary,
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
                         text = "Next break in ${data.nextBreakMinutes} minutes",
                         style = MaterialTheme.typography.bodyMedium,
                         color = CadenceTextPrimary,
                     )
+                    
+                    Spacer(modifier = Modifier.height(10.dp))
+                    
+                    Text(
+                        text = "You've been focused for ${data.currentFocusMinutes} minutes.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary,
+                    )
+                    
                     Spacer(modifier = Modifier.height(16.dp))
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)){
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))

@@ -361,11 +361,20 @@ private fun MediumContent(state: DashboardUiState) {
             horizontalArrangement = Arrangement.spacedBy(18.dp),
             verticalAlignment = Alignment.Top,
         ) {
-            TopAppsCard(
-                apps = state.appUsage.take(6),
-                totalFocusedTime = state.totalFocusedTime,
+            Column(
                 modifier = Modifier.weight(1.2f),
-            )
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                TopAppsCard(
+                    apps = state.appUsage.take(6),
+                    totalFocusedTime = state.totalFocusedTime,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                TrackingCard(
+                    data = state.trackingStatus,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Column(
                 modifier = Modifier.weight(0.9f),
                 verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -378,10 +387,6 @@ private fun MediumContent(state: DashboardUiState) {
                     modifier = Modifier.fillMaxWidth(),
                 )
                 BreakCard(data = state.breakInfo, modifier = Modifier.fillMaxWidth())
-                TrackingCard(
-                    data = state.trackingStatus,
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
         }
         ActivityTimeline(
