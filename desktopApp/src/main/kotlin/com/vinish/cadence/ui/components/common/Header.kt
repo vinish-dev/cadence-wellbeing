@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DarkMode
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vinish.cadence.ui.theme.CadenceTextPrimary
@@ -32,6 +35,7 @@ import com.vinish.cadence.ui.theme.CadenceTextSecondary
 fun DashboardHeader(
     greetingName: String,
     todayLabel: String,
+    onSettingsClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -51,7 +55,7 @@ fun DashboardHeader(
                 color = CadenceTextSecondary,
             )
         }
-        HeaderActions(todayLabel = todayLabel)
+        HeaderActions(todayLabel = todayLabel, onSettingsClick = onSettingsClick)
     }
 }
 
@@ -60,6 +64,7 @@ fun SectionHeader(
     title: String,
     subtitle: String,
     todayLabel: String,
+    onSettingsClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -79,12 +84,12 @@ fun SectionHeader(
                 color = CadenceTextSecondary,
             )
         }
-        HeaderActions(todayLabel = todayLabel)
+        HeaderActions(todayLabel = todayLabel, onSettingsClick = onSettingsClick)
     }
 }
 
 @Composable
-private fun HeaderActions(todayLabel: String) {
+private fun HeaderActions(todayLabel: String, onSettingsClick: () -> Unit = {}) {
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         HeaderPill(
             text = todayLabel,
@@ -92,7 +97,7 @@ private fun HeaderActions(todayLabel: String) {
             width = 118.dp,
         )
         HeaderSquareIcon(icon = Icons.Outlined.DarkMode)
-        HeaderSquareIcon(icon = Icons.Outlined.Settings)
+        HeaderSquareIcon(icon = Icons.Outlined.Settings, onClick = onSettingsClick)
     }
 }
 
@@ -121,12 +126,16 @@ private fun HeaderPill(
 }
 
 @Composable
-private fun HeaderSquareIcon(icon: androidx.compose.ui.graphics.vector.ImageVector) {
+private fun HeaderSquareIcon(
+    icon: ImageVector,
+    onClick: () -> Unit = {},
+) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(14.dp))
+            .size(42.dp)
+            .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
-            .padding(11.dp),
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(imageVector = icon, contentDescription = null, tint = CadenceTextPrimary)

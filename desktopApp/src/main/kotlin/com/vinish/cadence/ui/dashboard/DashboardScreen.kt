@@ -28,6 +28,7 @@ enum class DashboardLayoutMode {
 fun DashboardScreenContent(
     state: DashboardUiState,
     layoutMode: DashboardLayoutMode,
+    showActivityChart: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -39,9 +40,9 @@ fun DashboardScreenContent(
             layoutMode = layoutMode,
         )
         when (layoutMode) {
-            DashboardLayoutMode.Expanded -> ExpandedContent(state)
-            DashboardLayoutMode.Medium -> MediumContent(state)
-            DashboardLayoutMode.Compact -> CompactContent(state)
+            DashboardLayoutMode.Expanded -> ExpandedContent(state, showActivityChart)
+            DashboardLayoutMode.Medium -> MediumContent(state, showActivityChart)
+            DashboardLayoutMode.Compact -> CompactContent(state, showActivityChart)
         }
     }
 }
@@ -101,7 +102,7 @@ private fun MetricSection(
 }
 
 @Composable
-private fun ExpandedContent(state: DashboardUiState) {
+private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(18.dp),
@@ -111,7 +112,9 @@ private fun ExpandedContent(state: DashboardUiState) {
             modifier = Modifier.weight(1.45f),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+            if (showActivityChart) {
+                ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+            }
             TopAppsCard(
                 apps = state.appUsage.take(6),
                 totalFocusedTime = state.totalFocusedTime,
@@ -137,9 +140,11 @@ private fun ExpandedContent(state: DashboardUiState) {
 }
 
 @Composable
-private fun MediumContent(state: DashboardUiState) {
+private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-        ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+        if (showActivityChart) {
+            ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(18.dp),
@@ -181,7 +186,7 @@ private fun MediumContent(state: DashboardUiState) {
 }
 
 @Composable
-private fun CompactContent(state: DashboardUiState) {
+private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
         CurrentFocusCard(
             appName = state.activeAppName,
@@ -190,7 +195,9 @@ private fun CompactContent(state: DashboardUiState) {
             details = state.currentFocusDetails,
             modifier = Modifier.fillMaxWidth(),
         )
-        ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+        if (showActivityChart) {
+            ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
+        }
         TopAppsCard(
             apps = state.appUsage.take(6),
             totalFocusedTime = state.totalFocusedTime,

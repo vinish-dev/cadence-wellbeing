@@ -49,6 +49,7 @@ fun App() {
     val typingCount by KeyboardTracker.typingCount.collectAsState()
     val currentSession by SessionManager.currentSession.collectAsState()
     val pastSessions by SessionManager.sessions.collectAsState()
+    val settingsState by com.vinish.cadence.tracking.SettingsManager.settings.collectAsState()
     val dashboardState = remember(trackerState, typingCount, currentSession, pastSessions) {
         dashboardStateFromTracking(
             typingCount = typingCount,
@@ -99,12 +100,31 @@ fun App() {
                                     DashboardHeader(
                                         greetingName = dashboardState.greetingName,
                                         todayLabel = dashboardState.todayLabel,
+                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings },
                                     )
                                 }
                                 item {
                                     DashboardScreenContent(
                                         state = dashboardState,
-                                        layoutMode = layoutMode
+                                        layoutMode = layoutMode,
+                                        showActivityChart = settingsState.showActivityOverviewChart
+                                    )
+                                }
+                            }
+                            CadenceDestination.Settings -> {
+                                item {
+                                    SectionHeader(
+                                        title = "Settings",
+                                        subtitle = "Manage your dashboard preferences.",
+                                        todayLabel = dashboardState.todayLabel,
+                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings }
+                                    )
+                                }
+                                item {
+                                    com.vinish.cadence.ui.settings.SettingsScreen(
+                                        state = settingsState,
+                                        onToggleActivityChart = { com.vinish.cadence.tracking.SettingsManager.toggleActivityOverviewChart(it) },
+                                        modifier = Modifier.fillMaxWidth()
                                     )
                                 }
                             }
@@ -114,6 +134,7 @@ fun App() {
                                         title = "Activity",
                                         subtitle = "A quick look at your latest tracked activity.",
                                         todayLabel = dashboardState.todayLabel,
+                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings },
                                     )
                                 }
                                 item {
@@ -129,6 +150,7 @@ fun App() {
                                         title = "Apps Usage",
                                         subtitle = "Detailed breakdown of the applications you've focused on today.",
                                         todayLabel = dashboardState.todayLabel,
+                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings },
                                     )
                                 }
                                 item {

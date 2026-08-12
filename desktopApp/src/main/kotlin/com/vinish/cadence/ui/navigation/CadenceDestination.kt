@@ -6,4 +6,5 @@ enum class CadenceDestination(
     Dashboard("Dashboard"),
     Activity("Activity"),
     Apps("Apps"),
+    Settings("Settings"),
 }
