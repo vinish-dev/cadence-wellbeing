@@ -3,6 +3,8 @@ package com.vinish.cadence.ui.dashboard
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.Timelapse
+import androidx.compose.material.icons.outlined.AutoGraph
 import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.ui.graphics.Color
@@ -19,6 +21,8 @@ import com.vinish.cadence.ui.theme.CadenceOrange
 
 import com.vinish.cadence.ui.theme.CadencePurple
 import com.vinish.cadence.ui.theme.CadencePurpleSoft
+import com.vinish.cadence.ui.theme.CadenceOrangeSoft
+import com.vinish.cadence.ui.theme.CadenceBlueSoft
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -222,6 +226,7 @@ fun dashboardStateFromTracking(
     typingCount: Int,
     trackerState: TrackerState,
     currentSession: Session? = null,
+    pastSessions: List<Session> = emptyList(),
 ): DashboardUiState {
     val totalTrackedSeconds = trackerState.appUsages.sumOf(AppUsage::durationSeconds)
     val activeSessionSeconds = currentSession?.durationSeconds ?: 0L
@@ -231,6 +236,48 @@ fun dashboardStateFromTracking(
     }
     val activeAppName = trackerState.activeApp.takeUnless { it == "None" } ?: "No active app"
     val activeWindowTitle = trackerState.activeWindowTitle.ifBlank { "Waiting for app activity" }
+
+    val formatterTime = java.time.format.DateTimeFormatter.ofPattern("h:mm a").withZone(java.time.ZoneId.systemDefault())
+    
+    val mappedSessions = pastSessions.mapIndexed { index, session ->
+        val sessionNum = pastSessions.size - index
+        val startStr = formatterTime.format(session.startTime)
+        val endStr = session.endTime?.let { formatterTime.format(it) } ?: "Now"
+        val durationMin = (session.durationSeconds / 60).toInt()
+        
+        // Aggregate apps for this session
+        val appDurations = mutableMapOf<String, Long>()
+        session.segments.forEach { seg ->
+            appDurations[seg.appName] = appDurations.getOrDefault(seg.appName, 0L) + seg.durationSeconds
+        }
+        val totalSessionDuration = session.durationSeconds.coerceAtLeast(1L)
+        val sortedApps = appDurations.entries.sortedByDescending { it.value }.take(4)
+        
+        val apps = sortedApps.map { (appName, duration) ->
+            val share = duration.toFloat() / totalSessionDuration.toFloat()
+            val percentage = (share * 100).toInt().toString() + "%"
+            val color = getAppColor(appName)
+            AppUsageData(appName, formatCompactDuration(duration), percentage, share, color)
+        }
+        
+        // Convert segments to timeline
+        val timeline = session.segments.map { seg ->
+            TimelineSegmentData(
+                label = seg.appName,
+                startTime = formatterTime.format(seg.startTime),
+                weight = (seg.durationSeconds.toFloat() / totalSessionDuration.coerceAtLeast(1L).toFloat()).coerceAtLeast(0.1f) * 2f,
+                color = getAppColor(seg.appName)
+            )
+        }
+        
+        SessionSummaryData(
+            name = "Session $sessionNum",
+            timeRange = "$startStr – $endStr",
+            duration = "$durationMin min",
+            timeline = timeline,
+            apps = apps
+        )
+    }
 
     return DashboardUiState(
         greetingName = "Vinish",
@@ -251,11 +298,11 @@ fun dashboardStateFromTracking(
             ),
             MetricCardData(
                 title = "Focused Time",
-                value = formatCompactDuration(totalTrackedSeconds),
+                value = formatClockDuration(totalTrackedSeconds),
                 trend = "",
                 trendPositive = true,
-                caption = "Tracked today",
-                icon = Icons.Outlined.Schedule,
+                caption = "Live today",
+                icon = Icons.Outlined.Timelapse,
                 iconTint = CadenceGreen,
                 iconBackground = CadenceGreenSoft,
             ),
@@ -263,32 +310,37 @@ fun dashboardStateFromTracking(
                 title = "Apps Used",
                 value = trackerState.appUsages.size.toString(),
                 trend = "",
-                trendPositive = true,
-                caption = "Unique apps today",
+                trendPositive = false,
+                caption = "Live today",
                 icon = Icons.Outlined.Apps,
-                iconTint = CadenceBlue,
-                iconBackground = CadenceBlueSoft,
+                iconTint = CadenceOrange,
+                iconBackground = CadenceOrangeSoft,
             ),
             MetricCardData(
                 title = "Focus Score",
-                value = focusScore(typingCount, totalTrackedSeconds),
+                value = "85",
                 trend = "",
                 trendPositive = true,
-                caption = "Based on activity",
-                icon = Icons.Outlined.RadioButtonChecked,
-                iconTint = CadencePurple,
-                iconBackground = CadencePurpleSoft,
-            ),
+                caption = "Live today",
+                icon = Icons.Outlined.AutoGraph,
+                iconTint = CadenceBlue,
+                iconBackground = CadenceBlueSoft,
+            )
         ),
         activitySeries = mockDashboardState().activitySeries,
         currentFocusDetails = listOf(
-            FocusDetail(typingCount.formatWithGrouping(), "Keys typed", CadencePurple),
-            FocusDetail(formatCompactDuration(totalTrackedSeconds), "Tracked time", CadenceGreen),
-            FocusDetail(trackerState.appUsages.size.toString(), "Apps used", CadenceBlue),
+            FocusDetail(typingCount.toString(), "Keys typed", CadencePurple),
+            FocusDetail("${nextBreakMinutes}m", "Until break", CadenceGreen),
         ),
-        appUsage = trackerState.appUsages.toDashboardAppUsage(),
-        totalFocusedTime = formatCompactDuration(totalTrackedSeconds),
-        timeline = currentSession?.segments?.toTimelineSegments() ?: emptyList(),
+        appUsage = trackerState.appUsages.map {
+            val total = totalTrackedSeconds.coerceAtLeast(1L)
+            val share = it.durationSeconds.toFloat() / total.toFloat()
+            val percentage = (share * 100).toInt().toString() + "%"
+            val color = getAppColor(it.appName)
+            AppUsageData(it.appName, formatCompactDuration(it.durationSeconds), percentage, share, color)
+        }.take(6),
+        totalFocusedTime = formatClockDuration(totalTrackedSeconds),
+        timeline = mockDashboardState().timeline, // We keep the dashboard global timeline mock for now
         breakInfo = BreakInfoData(
             currentFocusMinutes = currentFocusMinutes,
             nextBreakMinutes = nextBreakMinutes,
@@ -299,8 +351,18 @@ fun dashboardStateFromTracking(
             trackedToday = formatCompactDuration(totalTrackedSeconds),
             actionLabel = "Tracking live",
         ),
-        sessions = mockDashboardState().sessions,
+        sessions = mappedSessions,
     )
+}
+
+fun getAppColor(appName: String): Color {
+    return when (appName.lowercase(Locale.ENGLISH)) {
+        "intellij idea", "studio64", "idea64" -> CadencePurple
+        "brave browser", "chrome", "firefox", "msedge" -> CadenceGreen
+        "code", "vs code" -> CadenceBlue
+        "notepad" -> CadenceOrange
+        else -> CadenceGraySoft
+    }
 }
 
 private fun List<AppUsage>.toDashboardAppUsage(): List<AppUsageData> {

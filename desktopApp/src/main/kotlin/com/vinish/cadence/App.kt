@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.vinish.cadence.tracking.AppTracker
 import com.vinish.cadence.tracking.KeyboardTracker
+import com.vinish.cadence.tracking.SystemTracker
 import com.vinish.cadence.tracking.SessionManager
 import com.vinish.cadence.ui.activity.ActivityScreen
 import com.vinish.cadence.ui.apps.AppsScreen
@@ -38,6 +39,8 @@ import com.vinish.cadence.ui.theme.CadenceTheme
 @Composable
 fun App() {
     LaunchedEffect(Unit) {
+        SystemTracker.start()
+        SessionManager.start()
         AppTracker.start()
         KeyboardTracker.start()
     }

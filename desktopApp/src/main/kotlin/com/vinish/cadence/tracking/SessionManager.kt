@@ -2,16 +2,36 @@ package com.vinish.cadence.tracking
 
 import com.vinish.cadence.tracking.models.Segment
 import com.vinish.cadence.tracking.models.Session
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 object SessionManager {
+    private val scope = CoroutineScope(Dispatchers.Default)
+    
     private val _sessions = MutableStateFlow<List<Session>>(emptyList())
     val sessions = _sessions.asStateFlow()
 
     private val _currentSession = MutableStateFlow<Session?>(null)
     val currentSession = _currentSession.asStateFlow()
+
+    fun start() {
+        scope.launch {
+            SystemTracker.systemEvents.collect { event ->
+                when (event) {
+                    SystemEvent.Locked, SystemEvent.Suspended, SystemEvent.Shutdown -> {
+                        endCurrentSession()
+                    }
+                    SystemEvent.Unlocked, SystemEvent.Resumed -> {
+                        // The next app change will naturally start a new session
+                    }
+                }
+            }
+        }
+    }
 
     fun onAppChanged(appName: String, windowTitle: String, timestamp: Instant) {
         val current = _currentSession.value
@@ -35,14 +55,18 @@ object SessionManager {
     }
 
     fun onIdleTimeout(timestamp: Instant) {
+        endCurrentSession(timestamp)
+    }
+
+    private fun endCurrentSession(timestamp: Instant = Instant.now()) {
         val current = _currentSession.value
         if (current != null) {
             // End the current segment and session
             current.segments.lastOrNull()?.endTime = timestamp
             current.endTime = timestamp
             
-            // Move session to past sessions list
-            _sessions.value = _sessions.value + current
+            // Move session to past sessions list (inserted at index 0 for newest-first)
+            _sessions.value = listOf(current) + _sessions.value
             _currentSession.value = null
         }
     }
