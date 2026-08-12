@@ -129,7 +129,7 @@ private fun FullAppUsageRow(app: AppUsageData) {
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(app.share.coerceIn(0f, 1f))
+                    .fillMaxWidth(app.share.coerceIn(0.01f, 1f))
                     .height(6.dp)
                     .clip(CircleShape)
                     .background(app.color),

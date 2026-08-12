@@ -24,6 +24,7 @@ import com.vinish.cadence.ui.theme.CadencePurpleSoft
 import com.vinish.cadence.ui.theme.CadenceOrangeSoft
 import com.vinish.cadence.ui.theme.CadenceBlueSoft
 import java.time.LocalDate
+import kotlin.math.absoluteValue
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -32,6 +33,7 @@ import com.vinish.cadence.tracking.models.Segment
 import java.time.ZoneId
 import com.vinish.cadence.ui.activity.SessionSummaryData
 import com.vinish.cadence.ui.activity.TimelineSegmentData
+import kotlin.math.absoluteValue
 
 data class MetricCardData(
     val title: String,
@@ -332,13 +334,15 @@ fun dashboardStateFromTracking(
             FocusDetail(typingCount.toString(), "Keys typed", CadencePurple),
             FocusDetail("${nextBreakMinutes}m", "Until break", CadenceGreen),
         ),
-        appUsage = trackerState.appUsages.map {
-            val total = totalTrackedSeconds.coerceAtLeast(1L)
-            val share = it.durationSeconds.toFloat() / total.toFloat()
-            val percentage = (share * 100).toInt().toString() + "%"
-            val color = getAppColor(it.appName)
-            AppUsageData(it.appName, formatCompactDuration(it.durationSeconds), percentage, share, color)
-        }.take(6),
+        appUsage = trackerState.appUsages
+            .sortedByDescending { it.durationSeconds }
+            .map {
+                val total = totalTrackedSeconds.coerceAtLeast(1L)
+                val share = (it.durationSeconds.toFloat() / total.toFloat()).coerceAtLeast(0.01f)
+                val percentage = (share * 100).toInt().toString() + "%"
+                val color = getAppColor(it.appName)
+                AppUsageData(it.appName, formatCompactDuration(it.durationSeconds), percentage, share, color)
+            }.take(6),
         totalFocusedTime = formatClockDuration(totalTrackedSeconds),
         timeline = mockDashboardState().timeline, // We keep the dashboard global timeline mock for now
         breakInfo = BreakInfoData(
@@ -356,12 +360,26 @@ fun dashboardStateFromTracking(
 }
 
 fun getAppColor(appName: String): Color {
+    val palette = listOf(
+        CadencePurple,
+        Color(0xFFFF7A1A), // Bright orange
+        CadenceBlue,
+        CadenceOrange,
+        CadenceGreen,
+        Color(0xFF7C68FF),
+        Color(0xFF5BD2AF),
+    )
+    
     return when (appName.lowercase(Locale.ENGLISH)) {
         "intellij idea", "studio64", "idea64" -> CadencePurple
         "brave browser", "chrome", "firefox", "msedge" -> CadenceGreen
         "code", "vs code" -> CadenceBlue
         "notepad" -> CadenceOrange
-        else -> CadenceGraySoft
+        else -> {
+            // Pick a consistent vibrant color from the palette based on the app name hash
+            val hash = appName.hashCode().absoluteValue
+            palette[hash % palette.size]
+        }
     }
 }
 

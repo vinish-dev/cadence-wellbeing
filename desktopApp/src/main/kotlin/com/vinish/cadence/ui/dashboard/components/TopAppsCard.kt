@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 import com.vinish.cadence.ui.theme.CadenceBorder
@@ -134,7 +135,7 @@ private fun AppUsageRow(app: AppUsageData) {
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(app.share.coerceIn(0f, 1f))
+                    .fillMaxWidth(app.share.coerceIn(0.01f, 1f))
                     .height(6.dp)
                     .clip(CircleShape)
                     .background(app.color),
@@ -196,6 +197,7 @@ private fun FocusDonut(
             Text(
                 text = "Total focused\ntime",
                 style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
                 color = CadenceTextSecondary,
             )
         }
