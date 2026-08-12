@@ -1,4 +1,4 @@
-package com.vinish.cadence.ui.components
+package com.vinish.cadence.ui.components.common
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box

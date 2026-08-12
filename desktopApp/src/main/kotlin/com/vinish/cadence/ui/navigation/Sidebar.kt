@@ -1,4 +1,4 @@
-package com.vinish.cadence.ui.components
+package com.vinish.cadence.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

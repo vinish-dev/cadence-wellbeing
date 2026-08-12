@@ -1,4 +1,11 @@
-package com.vinish.cadence.ui.components
+package com.vinish.cadence.ui.dashboard.components
+import com.vinish.cadence.ui.components.common.DashboardCard
+import com.vinish.cadence.ui.dashboard.MetricCardData
+import com.vinish.cadence.ui.dashboard.BreakInfoData
+import com.vinish.cadence.ui.dashboard.TrackingStatusData
+import com.vinish.cadence.ui.dashboard.ChartPointSet
+import com.vinish.cadence.ui.dashboard.FocusDetail
+import com.vinish.cadence.ui.dashboard.AppUsageData
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -25,7 +32,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.vinish.cadence.ui.screens.BreakInfoData
+
 import com.vinish.cadence.ui.theme.CadenceGraySoft
 import com.vinish.cadence.ui.theme.CadencePurple
 import com.vinish.cadence.ui.theme.CadenceTextPrimary

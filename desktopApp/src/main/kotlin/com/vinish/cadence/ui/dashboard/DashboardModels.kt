@@ -1,4 +1,4 @@
-package com.vinish.cadence.ui.screens
+package com.vinish.cadence.ui.dashboard
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
@@ -16,7 +16,7 @@ import com.vinish.cadence.ui.theme.CadenceGreen
 import com.vinish.cadence.ui.theme.CadenceGreenSoft
 import com.vinish.cadence.ui.theme.CadenceIdle
 import com.vinish.cadence.ui.theme.CadenceOrange
-import com.vinish.cadence.ui.theme.CadenceOrangeSoft
+
 import com.vinish.cadence.ui.theme.CadencePurple
 import com.vinish.cadence.ui.theme.CadencePurpleSoft
 import java.time.LocalDate
@@ -26,6 +26,8 @@ import kotlin.math.roundToInt
 import com.vinish.cadence.tracking.models.Session
 import com.vinish.cadence.tracking.models.Segment
 import java.time.ZoneId
+import com.vinish.cadence.ui.activity.SessionSummaryData
+import com.vinish.cadence.ui.activity.TimelineSegmentData
 
 data class MetricCardData(
     val title: String,
@@ -58,13 +60,6 @@ data class ChartPointSet(
     val values: List<Float>,
 )
 
-data class TimelineSegmentData(
-    val label: String,
-    val startTime: String,
-    val weight: Float,
-    val color: Color,
-)
-
 data class BreakInfoData(
     val currentFocusMinutes: Int,
     val nextBreakMinutes: Int,
@@ -75,14 +70,6 @@ data class TrackingStatusData(
     val startedAt: String,
     val trackedToday: String,
     val actionLabel: String,
-)
-
-data class SessionSummaryData(
-    val name: String,
-    val timeRange: String,
-    val duration: String,
-    val timeline: List<TimelineSegmentData>,
-    val apps: List<AppUsageData>,
 )
 
 data class DashboardUiState(
@@ -312,7 +299,7 @@ fun dashboardStateFromTracking(
             trackedToday = formatCompactDuration(totalTrackedSeconds),
             actionLabel = "Tracking live",
         ),
-        sessions = emptyList(),
+        sessions = mockDashboardState().sessions,
     )
 }
 
@@ -386,7 +373,7 @@ private fun List<Segment>.toTimelineSegments(): List<TimelineSegmentData> {
 
 private fun Int.formatWithGrouping(): String = "%,d".format(Locale.ENGLISH, this)
 
-private fun formatCompactDuration(seconds: Long): String {
+fun formatCompactDuration(seconds: Long): String {
     if (seconds <= 0L) return "0m"
 
     val totalMinutes = seconds / 60

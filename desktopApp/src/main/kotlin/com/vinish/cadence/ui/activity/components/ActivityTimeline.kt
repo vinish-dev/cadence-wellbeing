@@ -1,4 +1,7 @@
-package com.vinish.cadence.ui.components
+package com.vinish.cadence.ui.activity.components
+import com.vinish.cadence.ui.components.common.DashboardCard
+import com.vinish.cadence.ui.activity.SessionSummaryData
+import com.vinish.cadence.ui.activity.TimelineSegmentData
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.vinish.cadence.ui.screens.TimelineSegmentData
+
 import com.vinish.cadence.ui.theme.CadenceGraySoft
 import com.vinish.cadence.ui.theme.CadenceTextPrimary
 import com.vinish.cadence.ui.theme.CadenceTextSecondary
