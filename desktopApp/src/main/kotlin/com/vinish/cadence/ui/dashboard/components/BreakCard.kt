@@ -76,7 +76,7 @@ fun BreakCard(
                             val progress = (data.currentFocusMinutes.toFloat() / threshold).coerceIn(0f, 1f)
                             progress * 360f
                         }
-                        val strokeColor = if (data.isRecommendationActive) com.vinish.cadence.ui.theme.CadenceOrange else CadencePurple
+                        val strokeColor = if (data.isRecommendationActive || data.isSnoozed) com.vinish.cadence.ui.theme.CadenceOrange else CadencePurple
 
                         drawArc(
                             color = strokeColor,

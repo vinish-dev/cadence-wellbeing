@@ -8,7 +8,8 @@ import java.time.Instant
 data class FocusState(
     val focusStartTime: Instant = Instant.now(),
     val snoozeUntil: Instant? = null,
-    val isBreakDetected: Boolean = false
+    val isBreakDetected: Boolean = false,
+    val hasSentNotification: Boolean = false
 ) {
     val currentFocusMinutes: Int
         get() {
@@ -23,21 +24,31 @@ object FocusManager {
 
     fun checkIdle(idleSeconds: Long) {
         val current = _state.value
+        val focusMins = (Duration.between(current.focusStartTime, Instant.now()).seconds / 60).toInt()
+        val threshold = SettingsManager.settings.value.breakTimerMinutes
+        val isSnoozed = current.snoozeUntil != null && Instant.now().isBefore(current.snoozeUntil)
+
         if (idleSeconds == 0L) {
             // Activity resumed
             if (current.isBreakDetected) {
                 // They were on a detected break, now they are back. Reset focus.
                 _state.value = FocusState(focusStartTime = Instant.now())
+                return
             }
         } else {
             // Check if we should detect a break
-            val focusMins = (Duration.between(current.focusStartTime, Instant.now()).seconds / 60).toInt()
-            val threshold = SettingsManager.settings.value.breakTimerMinutes
             if (focusMins >= threshold && idleSeconds >= 180) { // 3 minutes = 180 seconds
                 if (!current.isBreakDetected) {
                     _state.value = current.copy(isBreakDetected = true)
+                    return
                 }
             }
+        }
+        
+        // Trigger notification
+        if (focusMins >= threshold && !isSnoozed && !current.hasSentNotification) {
+            _state.value = _state.value.copy(hasSentNotification = true)
+            NotificationManager.sendNotification("Time for a break!", "You've been focused for $focusMins minutes. Step away to recharge.")
         }
     }
 
@@ -46,6 +57,9 @@ object FocusManager {
     }
 
     fun snoozeBreak() {
-        _state.value = _state.value.copy(snoozeUntil = Instant.now().plusSeconds(15 * 60))
+        _state.value = _state.value.copy(
+            snoozeUntil = Instant.now().plusSeconds(15 * 60),
+            hasSentNotification = false
+        )
     }
 }
