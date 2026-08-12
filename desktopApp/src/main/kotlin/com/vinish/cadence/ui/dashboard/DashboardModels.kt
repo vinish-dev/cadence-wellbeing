@@ -357,7 +357,7 @@ fun dashboardStateFromTracking(
                 AppUsageData(appName, formatCompactDuration(durationSeconds), percentage, share, color)
             }.take(6),
         totalFocusedTime = formatClockDuration(totalTrackedSeconds),
-        timeline = (pastSessions.flatMap { it.segments } + (currentSession?.segments ?: emptyList())).toTimelineSegments(),
+        timeline = (currentSession?.segments ?: emptyList()).toTimelineSegments(),
         breakInfo = BreakInfoData(
             currentFocusMinutes = currentFocusMinutes,
             nextBreakMinutes = nextBreakMinutes,
