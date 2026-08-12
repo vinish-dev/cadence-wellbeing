@@ -26,6 +26,7 @@ import com.vinish.cadence.ui.theme.CadenceBlueSoft
 import java.time.LocalDate
 import kotlin.math.absoluteValue
 import java.time.format.DateTimeFormatter
+import java.time.Instant
 import java.util.Locale
 import kotlin.math.roundToInt
 import com.vinish.cadence.tracking.models.Session
@@ -443,7 +444,31 @@ private fun List<Segment>.toTimelineSegments(): List<TimelineSegmentData> {
     }
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
 
-    return takeLast(15).map { segment ->
+    data class MergedSegment(
+        val appName: String,
+        val startTime: Instant,
+        var durationSeconds: Long
+    )
+
+    val merged = mutableListOf<MergedSegment>()
+    for (segment in this) {
+        val duration = segment.durationSeconds
+        if (merged.isEmpty()) {
+            merged.add(MergedSegment(segment.appName, segment.startTime, duration))
+        } else {
+            val last = merged.last()
+            if (last.appName == segment.appName) {
+                last.durationSeconds += duration
+            } else if (duration < 60) {
+                // Short app switch. Merge its duration into the previous app to prevent timeline clutter.
+                last.durationSeconds += duration
+            } else {
+                merged.add(MergedSegment(segment.appName, segment.startTime, duration))
+            }
+        }
+    }
+
+    return merged.takeLast(15).map { segment ->
         TimelineSegmentData(
             label = segment.appName,
             startTime = timeFormatter.format(segment.startTime),
