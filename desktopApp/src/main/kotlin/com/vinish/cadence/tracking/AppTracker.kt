@@ -66,44 +66,45 @@ object AppTracker {
                     }
 
                     val hwnd = User32.INSTANCE.GetForegroundWindow()
-                    if (hwnd == null) {
-                        // Ignore invalid/transient active-window results
-                        continue
+                    var isValidWindow = false
+                    var friendlyAppName = ""
+                    var windowTitle = ""
+                    
+                    if (hwnd != null) {
+                        val processId = IntByReference()
+                        User32.INSTANCE.GetWindowThreadProcessId(hwnd, processId)
+                        val pid = processId.value
+
+                        val process = ProcessHandle.of(pid.toLong()).orElse(null)
+                        val exeName = process?.info()?.command()
+                            ?.map { File(it).name }
+                            ?.orElse(null)
+
+                        if (!AppFilter.shouldIgnore(exeName)) {
+                            isValidWindow = true
+                            friendlyAppName = getFriendlyAppName(exeName!!)
+                            
+                            val titleLength = User32.INSTANCE.GetWindowTextLength(hwnd)
+                            windowTitle = if (titleLength > 0) {
+                                val buffer = CharArray(titleLength + 1)
+                                User32.INSTANCE.GetWindowText(hwnd, buffer, buffer.size)
+                                String(buffer, 0, titleLength)
+                            } else {
+                                ""
+                            }
+                        }
                     }
 
-                    // Get window text
-                    val titleLength = User32.INSTANCE.GetWindowTextLength(hwnd)
-                    val windowTitle = if (titleLength > 0) {
-                        val buffer = CharArray(titleLength + 1)
-                        User32.INSTANCE.GetWindowText(hwnd, buffer, buffer.size)
-                        String(buffer, 0, titleLength)
+                    if (isValidWindow) {
+                        if (friendlyAppName != lastAppName || windowTitle != lastWindowTitle) {
+                            SessionManager.onAppChanged(friendlyAppName, windowTitle, Instant.now())
+                            lastAppName = friendlyAppName
+                            lastWindowTitle = windowTitle
+                        }
                     } else {
-                        ""
-                    }
-
-                    // Get PID
-                    val processId = IntByReference()
-                    User32.INSTANCE.GetWindowThreadProcessId(hwnd, processId)
-                    val pid = processId.value
-
-                    // Get app name
-                    val process = ProcessHandle.of(pid.toLong()).orElse(null)
-                    val exeName = process?.info()?.command()
-                        ?.map { File(it).name }
-                        ?.orElse(null)
-
-                    if (AppFilter.shouldIgnore(exeName)) {
-                        // Ignore system/transient processes
-                        continue
-                    }
-
-                    val friendlyAppName = getFriendlyAppName(exeName!!)
-
-                    // Check if app or title changed
-                    if (friendlyAppName != lastAppName || windowTitle != lastWindowTitle) {
-                        SessionManager.onAppChanged(friendlyAppName, windowTitle, Instant.now())
-                        lastAppName = friendlyAppName
-                        lastWindowTitle = windowTitle
+                        // Transient null window or ignored app.
+                        // We intentionally do not end the session or switch to "None".
+                        // This allows the previous valid application to remain in focus and accumulate time.
                     }
                 }
 
