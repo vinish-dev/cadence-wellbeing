@@ -50,12 +50,14 @@ fun App() {
     val currentSession by SessionManager.currentSession.collectAsState()
     val pastSessions by SessionManager.sessions.collectAsState()
     val settingsState by com.vinish.cadence.tracking.SettingsManager.settings.collectAsState()
-    val dashboardState = remember(trackerState, typingCount, currentSession, pastSessions) {
+    val focusState by com.vinish.cadence.tracking.FocusManager.state.collectAsState()
+    val dashboardState = remember(trackerState, typingCount, currentSession, pastSessions, focusState) {
         dashboardStateFromTracking(
             typingCount = typingCount,
             trackerState = trackerState,
             currentSession = currentSession,
             pastSessions = pastSessions,
+            focusState = focusState,
         )
     }
     var selectedDestination by remember { mutableStateOf(CadenceDestination.Dashboard) }
@@ -107,7 +109,8 @@ fun App() {
                                     DashboardScreenContent(
                                         state = dashboardState,
                                         layoutMode = layoutMode,
-                                        showActivityChart = settingsState.showActivityOverviewChart
+                                        showActivityChart = settingsState.showActivityOverviewChart,
+                                        onSnoozeClick = { com.vinish.cadence.tracking.FocusManager.snoozeBreak() }
                                     )
                                 }
                             }

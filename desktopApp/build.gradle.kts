@@ -12,7 +12,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
     implementation(libs.kotlinx.coroutinesSwing)
-
+    implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
     implementation(libs.compose.uiToolingPreview)
     implementation("net.java.dev.jna:jna:5.18.0")
     implementation("net.java.dev.jna:jna-platform:5.18.0")

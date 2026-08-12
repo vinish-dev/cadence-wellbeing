@@ -59,6 +59,7 @@ object SessionManager {
     }
 
     private fun endCurrentSession(timestamp: Instant = Instant.now()) {
+        FocusManager.resetFocus()
         val current = _currentSession.value
         if (current != null) {
             // End the current segment and session

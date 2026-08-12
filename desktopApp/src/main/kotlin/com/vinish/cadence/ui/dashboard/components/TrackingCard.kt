@@ -66,12 +66,6 @@ fun TrackingCard(
                 style = MaterialTheme.typography.headlineLarge,
                 color = CadenceTextPrimary,
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Tracked time today",
-                style = MaterialTheme.typography.bodySmall,
-                color = CadenceTextSecondary,
-            )
             Spacer(modifier = Modifier.height(18.dp))
             Row(
                 modifier = Modifier

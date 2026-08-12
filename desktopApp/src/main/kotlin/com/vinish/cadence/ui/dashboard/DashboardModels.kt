@@ -70,6 +70,8 @@ data class ChartPointSet(
 data class BreakInfoData(
     val currentFocusMinutes: Int,
     val nextBreakMinutes: Int,
+    val isRecommendationActive: Boolean,
+    val isSnoozed: Boolean
 )
 
 data class TrackingStatusData(
@@ -185,7 +187,9 @@ fun mockDashboardState(): DashboardUiState = DashboardUiState(
     ),
     breakInfo = BreakInfoData(
         currentFocusMinutes = 42,
-        nextBreakMinutes = 18,
+        nextBreakMinutes = 3,
+        isRecommendationActive = false,
+        isSnoozed = false
     ),
     trackingStatus = TrackingStatusData(
         isActive = true,
@@ -230,6 +234,7 @@ fun dashboardStateFromTracking(
     trackerState: TrackerState,
     currentSession: Session? = null,
     pastSessions: List<Session> = emptyList(),
+    focusState: com.vinish.cadence.tracking.FocusState = com.vinish.cadence.tracking.FocusState(),
 ): DashboardUiState {
     val pastAppUsages = mutableMapOf<String, Long>()
     pastSessions.forEach { session ->
@@ -245,10 +250,12 @@ fun dashboardStateFromTracking(
     
     val totalTrackedSeconds = combinedUsages.values.sum()
     val activeSessionSeconds = currentSession?.durationSeconds ?: 0L
-    val currentFocusMinutes = (activeSessionSeconds / 60).toInt()
-    val nextBreakMinutes = (50 - (currentFocusMinutes % 50)).let { remaining ->
-        if (remaining == 50) 0 else remaining
-    }
+    
+    val currentFocusMinutes = focusState.currentFocusMinutes
+    val isSnoozed = focusState.snoozeUntil != null && java.time.Instant.now().isBefore(focusState.snoozeUntil)
+    val isRecommendationActive = currentFocusMinutes >= 45 && !isSnoozed
+    val nextBreakMinutes = (45 - currentFocusMinutes).coerceAtLeast(0)
+
     val activeAppName = trackerState.activeApp.takeUnless { it == "None" } ?: "No active app"
     val activeWindowTitle = trackerState.activeWindowTitle.ifBlank { "Waiting for app activity" }
 
@@ -361,6 +368,8 @@ fun dashboardStateFromTracking(
         breakInfo = BreakInfoData(
             currentFocusMinutes = currentFocusMinutes,
             nextBreakMinutes = nextBreakMinutes,
+            isRecommendationActive = isRecommendationActive,
+            isSnoozed = isSnoozed
         ),
         trackingStatus = TrackingStatusData(
             isActive = true,
