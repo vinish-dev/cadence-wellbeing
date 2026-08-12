@@ -48,11 +48,13 @@ fun App() {
     val trackerState by AppTracker.state.collectAsState()
     val typingCount by KeyboardTracker.typingCount.collectAsState()
     val currentSession by SessionManager.currentSession.collectAsState()
-    val dashboardState = remember(trackerState, typingCount, currentSession) {
+    val pastSessions by SessionManager.sessions.collectAsState()
+    val dashboardState = remember(trackerState, typingCount, currentSession, pastSessions) {
         dashboardStateFromTracking(
             typingCount = typingCount,
             trackerState = trackerState,
             currentSession = currentSession,
+            pastSessions = pastSessions,
         )
     }
     var selectedDestination by remember { mutableStateOf(CadenceDestination.Dashboard) }

@@ -230,7 +230,19 @@ fun dashboardStateFromTracking(
     currentSession: Session? = null,
     pastSessions: List<Session> = emptyList(),
 ): DashboardUiState {
-    val totalTrackedSeconds = trackerState.appUsages.sumOf(AppUsage::durationSeconds)
+    val pastAppUsages = mutableMapOf<String, Long>()
+    pastSessions.forEach { session ->
+        session.segments.forEach { seg ->
+            pastAppUsages[seg.appName] = pastAppUsages.getOrDefault(seg.appName, 0L) + seg.durationSeconds
+        }
+    }
+    
+    val combinedUsages = pastAppUsages.toMutableMap()
+    trackerState.appUsages.forEach { usage ->
+        combinedUsages[usage.appName] = combinedUsages.getOrDefault(usage.appName, 0L) + usage.durationSeconds
+    }
+    
+    val totalTrackedSeconds = combinedUsages.values.sum()
     val activeSessionSeconds = currentSession?.durationSeconds ?: 0L
     val currentFocusMinutes = (activeSessionSeconds / 60).toInt()
     val nextBreakMinutes = (50 - (currentFocusMinutes % 50)).let { remaining ->
@@ -310,7 +322,7 @@ fun dashboardStateFromTracking(
             ),
             MetricCardData(
                 title = "Apps Used",
-                value = trackerState.appUsages.size.toString(),
+                value = combinedUsages.size.toString(),
                 trend = "",
                 trendPositive = false,
                 caption = "Live today",
@@ -334,14 +346,14 @@ fun dashboardStateFromTracking(
             FocusDetail(typingCount.toString(), "Keys typed", CadencePurple),
             FocusDetail("${nextBreakMinutes}m", "Until break", CadenceGreen),
         ),
-        appUsage = trackerState.appUsages
-            .sortedByDescending { it.durationSeconds }
-            .map {
+        appUsage = combinedUsages.entries
+            .sortedByDescending { it.value }
+            .map { (appName, durationSeconds) ->
                 val total = totalTrackedSeconds.coerceAtLeast(1L)
-                val share = (it.durationSeconds.toFloat() / total.toFloat()).coerceAtLeast(0.01f)
+                val share = (durationSeconds.toFloat() / total.toFloat()).coerceAtLeast(0.01f)
                 val percentage = (share * 100).toInt().toString() + "%"
-                val color = getAppColor(it.appName)
-                AppUsageData(it.appName, formatCompactDuration(it.durationSeconds), percentage, share, color)
+                val color = getAppColor(appName)
+                AppUsageData(appName, formatCompactDuration(durationSeconds), percentage, share, color)
             }.take(6),
         totalFocusedTime = formatClockDuration(totalTrackedSeconds),
         timeline = mockDashboardState().timeline, // We keep the dashboard global timeline mock for now
