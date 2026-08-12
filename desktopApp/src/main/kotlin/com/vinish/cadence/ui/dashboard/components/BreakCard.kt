@@ -71,8 +71,9 @@ fun BreakCard(
                             size = Size(size.width, size.height),
                         )
                         
+                        val threshold = com.vinish.cadence.tracking.SettingsManager.settings.value.breakTimerMinutes.toFloat()
                         val sweep = if (data.isRecommendationActive) 360f else {
-                            val progress = (data.currentFocusMinutes.toFloat() / 45f).coerceIn(0f, 1f)
+                            val progress = (data.currentFocusMinutes.toFloat() / threshold).coerceIn(0f, 1f)
                             progress * 360f
                         }
                         val strokeColor = if (data.isRecommendationActive) com.vinish.cadence.ui.theme.CadenceOrange else CadencePurple

@@ -32,7 +32,8 @@ object FocusManager {
         } else {
             // Check if we should detect a break
             val focusMins = (Duration.between(current.focusStartTime, Instant.now()).seconds / 60).toInt()
-            if (focusMins >= 45 && idleSeconds >= 180) { // 3 minutes = 180 seconds
+            val threshold = SettingsManager.settings.value.breakTimerMinutes
+            if (focusMins >= threshold && idleSeconds >= 180) { // 3 minutes = 180 seconds
                 if (!current.isBreakDetected) {
                     _state.value = current.copy(isBreakDetected = true)
                 }

@@ -76,6 +76,41 @@ fun SettingsScreen(
                     )
                 )
             }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Break Timer",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = CadenceTextPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Set how often you'd like to be reminded to take a break. Current: ${state.breakTimerMinutes} minutes.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CadenceTextSecondary
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                androidx.compose.material3.Slider(
+                    value = state.breakTimerMinutes.toFloat(),
+                    onValueChange = { com.vinish.cadence.tracking.SettingsManager.updateBreakTimer(it.toInt()) },
+                    valueRange = 15f..120f,
+                    steps = 20, // 105 range / 5 = 21 steps? 20 intermediate steps
+                    colors = androidx.compose.material3.SliderDefaults.colors(
+                        thumbColor = CadencePurple,
+                        activeTrackColor = CadencePurple,
+                        inactiveTrackColor = Color(0xFFE5E7EB)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("15m", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
+                    Text("120m", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
+                }
+            }
         }
     }
 }

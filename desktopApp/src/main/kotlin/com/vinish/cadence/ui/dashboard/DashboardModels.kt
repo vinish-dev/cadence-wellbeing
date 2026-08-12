@@ -253,8 +253,9 @@ fun dashboardStateFromTracking(
     
     val currentFocusMinutes = focusState.currentFocusMinutes
     val isSnoozed = focusState.snoozeUntil != null && java.time.Instant.now().isBefore(focusState.snoozeUntil)
-    val isRecommendationActive = currentFocusMinutes >= 45 && !isSnoozed
-    val nextBreakMinutes = (45 - currentFocusMinutes).coerceAtLeast(0)
+    val threshold = com.vinish.cadence.tracking.SettingsManager.settings.value.breakTimerMinutes
+    val isRecommendationActive = currentFocusMinutes >= threshold && !isSnoozed
+    val nextBreakMinutes = (threshold - currentFocusMinutes).coerceAtLeast(0)
 
     val activeAppName = trackerState.activeApp.takeUnless { it == "None" } ?: "No active app"
     val activeWindowTitle = trackerState.activeWindowTitle.ifBlank { "Waiting for app activity" }
