@@ -356,7 +356,7 @@ fun dashboardStateFromTracking(
                 AppUsageData(appName, formatCompactDuration(durationSeconds), percentage, share, color)
             }.take(6),
         totalFocusedTime = formatClockDuration(totalTrackedSeconds),
-        timeline = mockDashboardState().timeline, // We keep the dashboard global timeline mock for now
+        timeline = (pastSessions.flatMap { it.segments } + (currentSession?.segments ?: emptyList())).toTimelineSegments(),
         breakInfo = BreakInfoData(
             currentFocusMinutes = currentFocusMinutes,
             nextBreakMinutes = nextBreakMinutes,
@@ -441,24 +441,14 @@ private fun List<Segment>.toTimelineSegments(): List<TimelineSegmentData> {
             ),
         )
     }
-
-    val palette = listOf(
-        CadencePurple,
-        CadenceGreen,
-        CadenceBlue,
-        Color(0xFFFF7A1A),
-        Color(0xFF7C68FF),
-        Color(0xFF5BD2AF),
-    )
-
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
 
-    return takeLast(6).mapIndexed { index, segment ->
+    return takeLast(15).map { segment ->
         TimelineSegmentData(
             label = segment.appName,
             startTime = timeFormatter.format(segment.startTime),
             weight = segment.durationSeconds.coerceAtLeast(1L).toFloat(),
-            color = palette[index % palette.size],
+            color = getAppColor(segment.appName),
         )
     }
 }
