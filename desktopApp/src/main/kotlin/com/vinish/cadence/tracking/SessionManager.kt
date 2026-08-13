@@ -18,6 +18,11 @@ object SessionManager {
     private val _currentSession = MutableStateFlow<Session?>(null)
     val currentSession = _currentSession.asStateFlow()
 
+    init {
+        _sessions.value = StorageManager.loadTodaySessions()
+        _currentSession.value = StorageManager.loadActiveSession()
+    }
+
     fun start() {
         scope.launch {
             SystemTracker.systemEvents.collect { event ->
@@ -52,6 +57,7 @@ object SessionManager {
             // Trigger flow update with a new list reference
             _currentSession.value = current.copy(segments = current.segments.toMutableList())
         }
+        StorageManager.saveActiveSession(_currentSession.value)
     }
 
     fun onIdleTimeout(timestamp: Instant) {
@@ -69,6 +75,9 @@ object SessionManager {
             // Move session to past sessions list (inserted at index 0 for newest-first)
             _sessions.value = listOf(current) + _sessions.value
             _currentSession.value = null
+            
+            StorageManager.saveSession(current)
+            StorageManager.saveActiveSession(null)
         }
     }
 }

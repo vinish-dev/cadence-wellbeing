@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 dependencies {
@@ -17,6 +18,7 @@ dependencies {
     implementation("net.java.dev.jna:jna:5.18.0")
     implementation("net.java.dev.jna:jna-platform:5.18.0")
     implementation(libs.androidx.material3.desktop)
+    implementation(libs.kotlinx.serialization.json)
 }
 
 compose.desktop {
