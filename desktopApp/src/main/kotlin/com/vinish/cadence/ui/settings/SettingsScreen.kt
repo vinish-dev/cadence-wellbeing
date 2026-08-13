@@ -146,6 +146,38 @@ fun SettingsScreen(
             }
             
             Spacer(modifier = Modifier.height(24.dp))
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Display Name",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = CadenceTextPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "How you want to be greeted on the dashboard.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CadenceTextSecondary
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                androidx.compose.material3.OutlinedTextField(
+                    value = state.userName,
+                    onValueChange = { com.vinish.cadence.tracking.SettingsManager.updateUserName(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    singleLine = true,
+                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = CadencePurple,
+                        unfocusedBorderColor = Color(0xFFE5E7EB),
+                        focusedTextColor = CadenceTextPrimary,
+                        unfocusedTextColor = CadenceTextPrimary,
+                        cursorColor = CadencePurple
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
             
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(

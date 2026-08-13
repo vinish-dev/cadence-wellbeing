@@ -300,7 +300,7 @@ fun dashboardStateFromTracking(
     }
 
     return DashboardUiState(
-        greetingName = "Vinish",
+        greetingName = com.vinish.cadence.tracking.SettingsManager.settings.value.userName,
         todayLabel = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH)),
         activeAppName = activeAppName,
         activeWindowTitle = activeWindowTitle,

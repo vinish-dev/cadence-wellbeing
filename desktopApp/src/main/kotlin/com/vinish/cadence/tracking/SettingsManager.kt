@@ -9,7 +9,8 @@ data class SettingsState(
     val showActivityOverviewChart: Boolean = true,
     val showSessionActiveCard: Boolean = false,
     val showDonutChart: Boolean = false,
-    val breakTimerMinutes: Int = 45
+    val breakTimerMinutes: Int = 45,
+    val userName: String = "Cadence User"
 )
 
 object SettingsManager {
@@ -33,6 +34,11 @@ object SettingsManager {
 
     fun updateBreakTimer(minutes: Int) {
         _settings.value = _settings.value.copy(breakTimerMinutes = minutes)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun updateUserName(name: String) {
+        _settings.value = _settings.value.copy(userName = name)
         StorageManager.saveSettings(_settings.value)
     }
 }

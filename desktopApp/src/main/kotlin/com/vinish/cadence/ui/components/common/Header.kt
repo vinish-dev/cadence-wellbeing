@@ -37,6 +37,14 @@ fun DashboardHeader(
     greetingName: String,
     todayLabel: String,
 ) {
+    val currentHour = java.time.LocalTime.now().hour
+    val timeGreeting = when (currentHour) {
+        in 5..11 -> "Good Morning"
+        in 12..16 -> "Good Afternoon"
+        in 17..20 -> "Good Evening"
+        else -> "Good Night"
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -44,7 +52,7 @@ fun DashboardHeader(
     ) {
         Column {
             Text(
-                text = "Good Morning, $greetingName",
+                text = "$timeGreeting, $greetingName",
                 style = MaterialTheme.typography.headlineLarge,
                 color = CadenceTextPrimary,
             )
