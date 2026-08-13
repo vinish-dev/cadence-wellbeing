@@ -51,8 +51,10 @@ object KeyboardTracker {
                     if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) {
                         if (!pressedKeys[vkCode]) {
                             pressedKeys[vkCode] = true
-                            _typingCount.value++
-                            SessionManager.incrementKeysTyped()
+                            if (SettingsManager.settings.value.isKeyboardTrackingEnabled) {
+                                _typingCount.value++
+                                SessionManager.incrementKeysTyped()
+                            }
                         }
                     } else if (msg == WM_KEYUP || msg == WM_SYSKEYUP) {
                         pressedKeys[vkCode] = false

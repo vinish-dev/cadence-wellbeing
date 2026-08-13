@@ -10,7 +10,10 @@ data class SettingsState(
     val showSessionActiveCard: Boolean = false,
     val showDonutChart: Boolean = false,
     val breakTimerMinutes: Int = 45,
-    val userName: String = "Cadence User"
+    val userName: String = "Cadence User",
+    val isKeyboardTrackingEnabled: Boolean = true,
+    val isMouseTrackingEnabled: Boolean = true,
+    val isActivityDetectionEnabled: Boolean = true
 )
 
 object SettingsManager {
@@ -39,6 +42,21 @@ object SettingsManager {
 
     fun updateUserName(name: String) {
         _settings.value = _settings.value.copy(userName = name)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleKeyboardTracking(enabled: Boolean) {
+        _settings.value = _settings.value.copy(isKeyboardTrackingEnabled = enabled)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleMouseTracking(enabled: Boolean) {
+        _settings.value = _settings.value.copy(isMouseTrackingEnabled = enabled)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleActivityDetection(enabled: Boolean) {
+        _settings.value = _settings.value.copy(isActivityDetectionEnabled = enabled)
         StorageManager.saveSettings(_settings.value)
     }
 }

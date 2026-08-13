@@ -45,8 +45,10 @@ object MouseTracker {
             if (nCode >= 0) {
                 val msg = wParam.toInt()
                 if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN) {
-                    _clickCount.value++
-                    SessionManager.incrementMouseClicks()
+                    if (SettingsManager.settings.value.isMouseTrackingEnabled) {
+                        _clickCount.value++
+                        SessionManager.incrementMouseClicks()
+                    }
                 }
             }
             User32.INSTANCE.CallNextHookEx(hook, nCode, wParam, null)

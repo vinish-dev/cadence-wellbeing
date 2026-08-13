@@ -211,6 +211,112 @@ fun SettingsScreen(
                     Text("120m", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Text(
+                text = "Tracking & Privacy",
+                style = MaterialTheme.typography.titleMedium,
+                color = CadenceTextPrimary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Activity Detection",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = CadenceTextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Used to determine whether you're actively using your computer for break detection.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary
+                    )
+                }
+                
+                Switch(
+                    checked = state.isActivityDetectionEnabled,
+                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleActivityDetection(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = CadencePurple,
+                        uncheckedThumbColor = CadenceTextSecondary,
+                        uncheckedTrackColor = Color(0xFFE5E7EB)
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Track Keyboard Activity",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = CadenceTextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Count keyboard presses for the Keys Typed metric.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary
+                    )
+                }
+                
+                Switch(
+                    checked = state.isKeyboardTrackingEnabled,
+                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleKeyboardTracking(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = CadencePurple,
+                        uncheckedThumbColor = CadenceTextSecondary,
+                        uncheckedTrackColor = Color(0xFFE5E7EB)
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Track Mouse Activity",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = CadenceTextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Count mouse clicks for the Mouse Clicks metric.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary
+                    )
+                }
+                
+                Switch(
+                    checked = state.isMouseTrackingEnabled,
+                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleMouseTracking(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = CadencePurple,
+                        uncheckedThumbColor = CadenceTextSecondary,
+                        uncheckedTrackColor = Color(0xFFE5E7EB)
+                    )
+                )
+            }
         }
     }
 }

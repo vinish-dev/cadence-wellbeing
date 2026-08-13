@@ -49,7 +49,8 @@ object AppTracker {
 
         while (running) {
             try {
-                val idleSeconds = SystemTracker.getIdleTimeSeconds()
+                val rawIdleSeconds = SystemTracker.getIdleTimeSeconds()
+                val idleSeconds = if (SettingsManager.settings.value.isActivityDetectionEnabled) rawIdleSeconds else 0L
                 FocusManager.checkIdle(idleSeconds)
 
                 if (idleSeconds > IDLE_TIMEOUT_SECONDS) {
