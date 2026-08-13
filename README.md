@@ -19,6 +19,12 @@ Cadence is a lightweight, privacy-first digital wellbeing application for Window
 ![Cadence Dashboard](./screenshots/ss4.png)
 <br><br>
 
+
+## ⬇️How to Install Msi Version
+1. Download the Msi file from the release section
+2. Double click on the installer to begin the installation process
+3. Open the Cadence from the Desktop shortcut
+   
 ## 🌟 Core Principles
 
 - **Native Windows Feel**: Seamlessly integrates into your workflow.
@@ -44,6 +50,10 @@ Cadence is a lightweight, privacy-first digital wellbeing application for Window
 <!-- - **Storage**: JSON-based local storage (Room + SQLite planned for future releases) -->
 
 ## 🚀 Getting Started
+
+### Prerequisites
+- JDK 17 or higher
+- Windows OS (Required for Win32 API hooks)
 
 ### Prerequisites
 - JDK 17 or higher
