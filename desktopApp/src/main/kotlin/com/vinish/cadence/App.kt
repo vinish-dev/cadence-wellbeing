@@ -38,12 +38,6 @@ import com.vinish.cadence.ui.theme.CadenceTheme
 
 @Composable
 fun App() {
-    LaunchedEffect(Unit) {
-        SystemTracker.start()
-        SessionManager.start()
-        AppTracker.start()
-        KeyboardTracker.start()
-    }
 
     val trackerState by AppTracker.state.collectAsState()
     val typingCount by KeyboardTracker.typingCount.collectAsState()
