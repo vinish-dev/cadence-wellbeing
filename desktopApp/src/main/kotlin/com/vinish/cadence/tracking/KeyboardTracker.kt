@@ -6,12 +6,18 @@ import com.sun.jna.platform.win32.WinUser.HHOOK
 import com.sun.jna.platform.win32.WinUser.LowLevelKeyboardProc
 import com.sun.jna.platform.win32.WinUser.MSG
 import com.sun.jna.platform.win32.WinUser.WH_KEYBOARD_LL
-import com.sun.jna.platform.win32.WinUser.WM_KEYDOWN
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.concurrent.thread
 
 object KeyboardTracker {
+
+    private const val WM_KEYDOWN = 0x0100
+    private const val WM_KEYUP = 0x0101
+    private const val WM_SYSKEYDOWN = 0x0104
+    private const val WM_SYSKEYUP = 0x0105
+
+    private val pressedKeys = BooleanArray(256)
 
     private val _typingCount = MutableStateFlow(0)
     val typingCount = _typingCount.asStateFlow()
@@ -36,10 +42,22 @@ object KeyboardTracker {
     }
 
     private fun installHookAndListen() {
-        hookProc = LowLevelKeyboardProc { nCode, wParam, _ ->
-            if (nCode >= 0 && wParam.toInt() == WM_KEYDOWN) {
-                _typingCount.value++
-                SessionManager.incrementKeysTyped()
+        hookProc = LowLevelKeyboardProc { nCode, wParam, info ->
+            if (nCode >= 0 && info != null) {
+                val msg = wParam.toInt()
+                val vkCode = info.vkCode
+                
+                if (vkCode in 0..255) {
+                    if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN) {
+                        if (!pressedKeys[vkCode]) {
+                            pressedKeys[vkCode] = true
+                            _typingCount.value++
+                            SessionManager.incrementKeysTyped()
+                        }
+                    } else if (msg == WM_KEYUP || msg == WM_SYSKEYUP) {
+                        pressedKeys[vkCode] = false
+                    }
+                }
             }
 
             User32.INSTANCE.CallNextHookEx(hook, nCode, wParam, null)
