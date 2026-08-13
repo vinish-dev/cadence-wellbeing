@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.AutoGraph
 import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -77,6 +79,43 @@ fun Sidebar(
                 )
             }
         }
+        Spacer(modifier = Modifier.weight(1f))
+        if (compact) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                SidebarBottomIcon(icon = Icons.Outlined.DarkMode, onClick = {})
+                SidebarBottomIcon(icon = Icons.Outlined.Settings, onClick = { onDestinationSelected(CadenceDestination.Settings) })
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SidebarBottomIcon(icon = Icons.Outlined.DarkMode, onClick = {})
+                SidebarBottomIcon(icon = Icons.Outlined.Settings, onClick = { onDestinationSelected(CadenceDestination.Settings) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun SidebarBottomIcon(
+    icon: ImageVector,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(42.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(CadenceBackground)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(imageVector = icon, contentDescription = null, tint = CadenceTextPrimary, modifier = Modifier.size(20.dp))
     }
 }
 

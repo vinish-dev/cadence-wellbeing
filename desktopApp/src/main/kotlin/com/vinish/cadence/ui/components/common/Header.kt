@@ -36,7 +36,6 @@ import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
 fun DashboardHeader(
     greetingName: String,
     todayLabel: String,
-    onSettingsClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -56,7 +55,7 @@ fun DashboardHeader(
                 color = CadenceTextSecondary,
             )
         }
-        HeaderActions(todayLabel = todayLabel, onSettingsClick = onSettingsClick)
+        HeaderActions(todayLabel = todayLabel)
     }
 }
 
@@ -65,7 +64,6 @@ fun SectionHeader(
     title: String,
     subtitle: String,
     todayLabel: String,
-    onSettingsClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -85,20 +83,18 @@ fun SectionHeader(
                 color = CadenceTextSecondary,
             )
         }
-        HeaderActions(todayLabel = todayLabel, onSettingsClick = onSettingsClick)
+        HeaderActions(todayLabel = todayLabel)
     }
 }
 
 @Composable
-private fun HeaderActions(todayLabel: String, onSettingsClick: () -> Unit = {}) {
+private fun HeaderActions(todayLabel: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         HeaderPill(
             text = todayLabel,
             leadingIcon = null,
             width = 100.dp,
         )
-        HeaderSquareIcon(icon = Icons.Outlined.DarkMode)
-        HeaderSquareIcon(icon = Icons.Outlined.Settings, onClick = onSettingsClick)
     }
 }
 

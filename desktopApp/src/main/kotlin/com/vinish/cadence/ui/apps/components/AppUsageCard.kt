@@ -41,7 +41,7 @@ fun AppUsageCard(
         Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
@@ -50,13 +50,28 @@ fun AppUsageCard(
                         style = MaterialTheme.typography.titleLarge,
                         color = CadenceTextPrimary,
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+//                    Spacer(modifier = Modifier.height(4.dp))
+//                    Text(
+//                        text = "$totalFocusedTime tracked across ${apps.size} apps",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = CadenceTextSecondary,
+//                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(com.vinish.cadence.ui.theme.CadenceBackground)
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                ) {
                     Text(
-                        text = "$totalFocusedTime tracked across ${apps.size} apps",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary,
+                        text = totalFocusedTime,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CadenceTextPrimary,
                     )
                 }
+
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))

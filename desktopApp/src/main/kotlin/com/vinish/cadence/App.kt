@@ -96,7 +96,6 @@ fun App() {
                                     DashboardHeader(
                                         greetingName = dashboardState.greetingName,
                                         todayLabel = dashboardState.todayLabel,
-                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings },
                                     )
                                 }
                                 item {
@@ -116,7 +115,6 @@ fun App() {
                                         title = "Settings",
                                         subtitle = "Manage your dashboard preferences.",
                                         todayLabel = dashboardState.todayLabel,
-                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings }
                                     )
                                 }
                                 item {
@@ -135,7 +133,6 @@ fun App() {
                                         title = "Activity",
                                         subtitle = "A quick look at your latest tracked activity.",
                                         todayLabel = dashboardState.todayLabel,
-                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings },
                                     )
                                 }
                                 item {
@@ -151,7 +148,6 @@ fun App() {
                                         title = "Apps Usage",
                                         subtitle = "Detailed breakdown of the applications you've focused on today.",
                                         todayLabel = dashboardState.todayLabel,
-                                        onSettingsClick = { selectedDestination = CadenceDestination.Settings },
                                     )
                                 }
                                 item {

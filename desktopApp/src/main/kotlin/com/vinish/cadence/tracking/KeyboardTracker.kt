@@ -20,6 +20,10 @@ object KeyboardTracker {
     private var running = false
     private var hookProc: LowLevelKeyboardProc? = null
 
+    fun initialize(count: Int) {
+        _typingCount.value = count
+    }
+
     fun start() {
         synchronized(this) {
             if (running) return
@@ -35,6 +39,7 @@ object KeyboardTracker {
         hookProc = LowLevelKeyboardProc { nCode, wParam, _ ->
             if (nCode >= 0 && wParam.toInt() == WM_KEYDOWN) {
                 _typingCount.value++
+                SessionManager.incrementKeysTyped()
             }
 
             User32.INSTANCE.CallNextHookEx(hook, nCode, wParam, null)

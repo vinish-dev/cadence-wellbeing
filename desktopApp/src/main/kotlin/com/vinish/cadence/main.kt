@@ -24,6 +24,10 @@ fun main() {
     com.vinish.cadence.tracking.SystemTracker.start()
     com.vinish.cadence.tracking.SessionManager.start()
     com.vinish.cadence.tracking.AppTracker.start()
+
+    val initialKeysTyped = com.vinish.cadence.tracking.SessionManager.sessions.value.sumOf { it.keysTyped } + 
+                           (com.vinish.cadence.tracking.SessionManager.currentSession.value?.keysTyped ?: 0)
+    com.vinish.cadence.tracking.KeyboardTracker.initialize(initialKeysTyped)
     com.vinish.cadence.tracking.KeyboardTracker.start()
 
     application {

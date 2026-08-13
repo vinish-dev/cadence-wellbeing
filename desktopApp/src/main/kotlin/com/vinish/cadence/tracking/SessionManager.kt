@@ -60,6 +60,10 @@ object SessionManager {
         StorageManager.saveActiveSession(_currentSession.value)
     }
 
+    fun incrementKeysTyped() {
+        _currentSession.value?.keysTyped = (_currentSession.value?.keysTyped ?: 0) + 1
+    }
+
     fun onIdleTimeout(timestamp: Instant) {
         endCurrentSession(timestamp)
     }
