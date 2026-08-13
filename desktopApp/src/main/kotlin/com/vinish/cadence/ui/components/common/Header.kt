@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vinish.cadence.ui.theme.CadenceTextPrimary
 import com.vinish.cadence.ui.theme.CadenceTextSecondary
+import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
 
 @Composable
 fun DashboardHeader(
@@ -93,8 +94,8 @@ private fun HeaderActions(todayLabel: String, onSettingsClick: () -> Unit = {}) 
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         HeaderPill(
             text = todayLabel,
-            leadingIcon = Icons.Outlined.CalendarMonth,
-            width = 118.dp,
+            leadingIcon = null,
+            width = 100.dp,
         )
         HeaderSquareIcon(icon = Icons.Outlined.DarkMode)
         HeaderSquareIcon(icon = Icons.Outlined.Settings, onClick = onSettingsClick)
@@ -104,15 +105,17 @@ private fun HeaderActions(todayLabel: String, onSettingsClick: () -> Unit = {}) 
 @Composable
 private fun HeaderPill(
     text: String,
-    leadingIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    leadingIcon: ImageVector? = null,
     width: Dp,
 ) {
+    val hPadding = if (leadingIcon == null) 0.dp else 12.dp
+
     Row(
         modifier = Modifier
             .width(width)
             .clip(RoundedCornerShape(14.dp))
             .background(Color.White)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding( horizontal = hPadding, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -121,7 +124,9 @@ private fun HeaderPill(
             style = MaterialTheme.typography.bodyMedium,
             color = CadenceTextPrimary,
         )
+        if (leadingIcon != null){
         Icon(imageVector = leadingIcon, contentDescription = null, tint = CadenceTextSecondary)
+            }
     }
 }
 

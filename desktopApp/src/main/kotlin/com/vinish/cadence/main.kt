@@ -56,7 +56,7 @@ fun main() {
                 resizable = true,
                 icon = trayIcon,
             ) {
-                window.minimumSize = java.awt.Dimension(1080, 760)
+                window.minimumSize = java.awt.Dimension(1400,850 )
                 App()
             }
         }
