@@ -288,14 +288,7 @@ fun dashboardStateFromTracking(
         }
         
         // Convert segments to timeline
-        val timeline = session.segments.map { seg ->
-            TimelineSegmentData(
-                label = seg.appName,
-                startTime = formatterTime.format(seg.startTime),
-                weight = (seg.durationSeconds.toFloat() / totalSessionDuration.coerceAtLeast(1L).toFloat()).coerceAtLeast(0.1f) * 2f,
-                color = getAppColor(seg.appName)
-            )
-        }
+        val timeline = session.segments.toTimelineSegments()
         
         SessionSummaryData(
             name = "Session $sessionNum",
@@ -482,7 +475,7 @@ private fun List<Segment>.toTimelineSegments(): List<TimelineSegmentData> {
         }
     }
 
-    return merged.takeLast(15).map { segment ->
+    return merged.map { segment ->
         TimelineSegmentData(
             label = segment.appName,
             startTime = timeFormatter.format(segment.startTime),
