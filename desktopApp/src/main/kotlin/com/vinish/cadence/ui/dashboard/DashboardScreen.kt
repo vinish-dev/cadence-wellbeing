@@ -134,7 +134,6 @@ private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean,
                 appName = state.activeAppName,
                 windowTitle = state.activeWindowTitle,
                 activeSessionDuration = state.activeSessionDuration,
-                details = state.currentFocusDetails,
                 modifier = Modifier.fillMaxWidth(),
             )
             BreakCard(data = state.breakInfo, onSnoozeClick = onSnoozeClick, modifier = Modifier.fillMaxWidth())
@@ -181,7 +180,6 @@ private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, s
                     appName = state.activeAppName,
                     windowTitle = state.activeWindowTitle,
                     activeSessionDuration = state.activeSessionDuration,
-                    details = state.currentFocusDetails,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 BreakCard(data = state.breakInfo, onSnoozeClick = onSnoozeClick, modifier = Modifier.fillMaxWidth())
@@ -201,7 +199,6 @@ private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, 
             appName = state.activeAppName,
             windowTitle = state.activeWindowTitle,
             activeSessionDuration = state.activeSessionDuration,
-            details = state.currentFocusDetails,
             modifier = Modifier.fillMaxWidth(),
         )
         if (showActivityChart) {

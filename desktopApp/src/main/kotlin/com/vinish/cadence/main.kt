@@ -29,7 +29,9 @@ fun main() {
     application {
         var isWindowVisible by remember { mutableStateOf(true) }
 
-        val trayIcon = painterResource("images/cadence_icon.PNG")
+        val trayIcon = painterResource("images/winter-pear.png")
+//        val trayIcon = painterResource("images/sakura.png")
+//        val trayIcon = painterResource("images/pink-cosmos.png")
 
         Tray(
             icon = trayIcon,
