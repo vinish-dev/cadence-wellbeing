@@ -42,6 +42,7 @@ import com.vinish.cadence.ui.theme.CadenceTextSecondary
 fun TopAppsCard(
     apps: List<AppUsageData>,
     totalFocusedTime: String,
+    showDonutChart: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     DashboardCard(modifier = modifier) {
@@ -83,11 +84,13 @@ fun TopAppsCard(
                         AppUsageRow(app)
                     }
                 }
-                FocusDonut(
-                    apps = apps,
-                    totalFocusedTime = totalFocusedTime,
-                    modifier = Modifier.weight(0.8f),
-                )
+                if (showDonutChart) {
+                    FocusDonut(
+                        apps = apps,
+                        totalFocusedTime = totalFocusedTime,
+                        modifier = Modifier.weight(0.8f),
+                    )
+                }
             }
         }
     }

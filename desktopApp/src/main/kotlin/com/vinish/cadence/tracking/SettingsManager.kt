@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 data class SettingsState(
     val showActivityOverviewChart: Boolean = true,
     val showSessionActiveCard: Boolean = false,
+    val showDonutChart: Boolean = false,
     val breakTimerMinutes: Int = 45
 )
 
@@ -22,6 +23,11 @@ object SettingsManager {
 
     fun toggleSessionActiveCard(show: Boolean) {
         _settings.value = _settings.value.copy(showSessionActiveCard = show)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleDonutChart(show: Boolean) {
+        _settings.value = _settings.value.copy(showDonutChart = show)
         StorageManager.saveSettings(_settings.value)
     }
 

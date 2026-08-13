@@ -30,6 +30,7 @@ fun DashboardScreenContent(
     layoutMode: DashboardLayoutMode,
     showActivityChart: Boolean,
     showSessionActiveCard: Boolean,
+    showDonutChart: Boolean,
     onSnoozeClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -42,9 +43,9 @@ fun DashboardScreenContent(
             layoutMode = layoutMode,
         )
         when (layoutMode) {
-            DashboardLayoutMode.Expanded -> ExpandedContent(state, showActivityChart, showSessionActiveCard, onSnoozeClick)
-            DashboardLayoutMode.Medium -> MediumContent(state, showActivityChart, showSessionActiveCard, onSnoozeClick)
-            DashboardLayoutMode.Compact -> CompactContent(state, showActivityChart, showSessionActiveCard, onSnoozeClick)
+            DashboardLayoutMode.Expanded -> ExpandedContent(state, showActivityChart, showSessionActiveCard, showDonutChart, onSnoozeClick)
+            DashboardLayoutMode.Medium -> MediumContent(state, showActivityChart, showSessionActiveCard, showDonutChart, onSnoozeClick)
+            DashboardLayoutMode.Compact -> CompactContent(state, showActivityChart, showSessionActiveCard, showDonutChart, onSnoozeClick)
         }
     }
 }
@@ -104,7 +105,7 @@ private fun MetricSection(
 }
 
 @Composable
-private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, onSnoozeClick: () -> Unit) {
+private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, showDonutChart: Boolean, onSnoozeClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(18.dp),
@@ -120,6 +121,7 @@ private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean,
             TopAppsCard(
                 apps = state.appUsage.take(6),
                 totalFocusedTime = state.totalFocusedTime,
+                showDonutChart = showDonutChart,
                 modifier = Modifier.fillMaxWidth(),
             )
             ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
@@ -144,7 +146,7 @@ private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean,
 }
 
 @Composable
-private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, onSnoozeClick: () -> Unit) {
+private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, showDonutChart: Boolean, onSnoozeClick: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
         if (showActivityChart) {
             ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
@@ -161,6 +163,7 @@ private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, s
                 TopAppsCard(
                     apps = state.appUsage.take(6),
                     totalFocusedTime = state.totalFocusedTime,
+                    showDonutChart = showDonutChart,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 if (showSessionActiveCard) {
@@ -192,7 +195,7 @@ private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, s
 }
 
 @Composable
-private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, onSnoozeClick: () -> Unit) {
+private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, showDonutChart: Boolean, onSnoozeClick: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
         CurrentFocusCard(
             appName = state.activeAppName,
@@ -207,6 +210,7 @@ private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, 
         TopAppsCard(
             apps = state.appUsage.take(6),
             totalFocusedTime = state.totalFocusedTime,
+            showDonutChart = showDonutChart,
             modifier = Modifier.fillMaxWidth(),
         )
         BreakCard(data = state.breakInfo, onSnoozeClick = onSnoozeClick, modifier = Modifier.fillMaxWidth())
