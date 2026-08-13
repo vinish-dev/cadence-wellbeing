@@ -4,19 +4,19 @@ Cadence is a lightweight, privacy-first digital wellbeing application for Window
 <br><br>
 
 ## Dashboard Screen
-![Cadence Dashboard](desktopApp\src\main\resources\images\ss1.png)
+![Cadence Dashboard](./screenshots/ss1.png)
 <br><br>
 
 ## Activity Screen
-![Cadence Dashboard](desktopApp\src\main\resources\images\ss2.png)
+![Cadence Dashboard](./screenshots/ss2.png)
 <br><br>
 
 ## Apps Screen
-![Cadence Dashboard](desktopApp\src\main\resources\images\ss3.png)
+![Cadence Dashboard](./screenshots/ss3.png)
 <br><br>
 
 ## Dashboard with line chart and donut chart (coming soon...)
-![Cadence Dashboard](desktopApp\src\main\resources\images\ss4.png)
+![Cadence Dashboard](./screenshots/ss4.png)
 <br><br>
 
 ## 🌟 Core Principles
