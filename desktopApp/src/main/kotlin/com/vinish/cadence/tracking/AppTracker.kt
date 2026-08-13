@@ -1,5 +1,6 @@
 package com.vinish.cadence.tracking
 
+import androidx.compose.ui.input.key.Key.Companion.L
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.ptr.IntByReference
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +29,7 @@ object AppTracker {
     val state = _state.asStateFlow()
 
     private var running = false
-    private const val IDLE_TIMEOUT_SECONDS = 300L
+    private const val IDLE_TIMEOUT_SECONDS = 600L
 
     fun start() {
         synchronized(this) {

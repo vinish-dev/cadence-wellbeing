@@ -52,8 +52,10 @@ object FocusManager {
         }
     }
 
-    fun resetFocus() {
-        _state.value = FocusState(focusStartTime = Instant.now())
+    fun markBreakDetected() {
+        if (!_state.value.isBreakDetected) {
+            _state.value = _state.value.copy(isBreakDetected = true)
+        }
     }
 
     fun snoozeBreak() {
