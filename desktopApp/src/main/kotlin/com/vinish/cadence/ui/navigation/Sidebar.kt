@@ -18,8 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.AutoGraph
-import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -87,16 +87,20 @@ fun Sidebar(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 SidebarBottomIcon(icon = Icons.Outlined.DarkMode, onClick = {})
-                SidebarBottomIcon(icon = Icons.Outlined.Settings, onClick = { onDestinationSelected(CadenceDestination.Settings) })
+                SidebarBottomIcon(
+                    icon = Icons.Outlined.Settings,
+                    onClick = { onDestinationSelected(CadenceDestination.Settings) })
             }
         } else {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SidebarBottomIcon(icon = Icons.Outlined.DarkMode, onClick = {})
-                SidebarBottomIcon(icon = Icons.Outlined.Settings, onClick = { onDestinationSelected(CadenceDestination.Settings) })
+                SidebarBottomIcon(
+                    icon = Icons.Outlined.Settings,
+                    onClick = { onDestinationSelected(CadenceDestination.Settings) })
             }
         }
     }
@@ -115,7 +119,7 @@ private fun SidebarBottomIcon(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = CadenceTextPrimary, modifier = Modifier.size(20.dp))
+        Icon(imageVector = icon, contentDescription = null, tint = CadenceTextSecondary, modifier = Modifier.size(20.dp))
     }
 }
 
