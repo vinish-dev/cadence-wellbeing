@@ -23,6 +23,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -66,6 +73,7 @@ fun ActivityTimeline(
             Spacer(modifier = Modifier.height(18.dp))
             
             val scrollState = rememberScrollState()
+            val coroutineScope = rememberCoroutineScope()
             LaunchedEffect(segments.size) {
                 if (segments.isNotEmpty()) {
                     scrollState.scrollTo(scrollState.maxValue)
@@ -75,6 +83,29 @@ fun ActivityTimeline(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                if (event.type == PointerEventType.Scroll) {
+                                    val deltaY = event.changes.first().scrollDelta.y
+                                    if (deltaY != 0f) {
+                                        coroutineScope.launch {
+                                            scrollState.scrollTo(scrollState.value + (deltaY * 50).toInt())
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .draggable(
+                        orientation = Orientation.Horizontal,
+                        state = rememberDraggableState { delta ->
+                            coroutineScope.launch {
+                                scrollState.scrollTo(scrollState.value - delta.toInt())
+                            }
+                        }
+                    )
                     .horizontalScroll(scrollState)
             ) {
                 Row(
