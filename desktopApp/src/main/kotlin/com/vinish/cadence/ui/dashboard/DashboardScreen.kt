@@ -29,6 +29,7 @@ fun DashboardScreenContent(
     state: DashboardUiState,
     layoutMode: DashboardLayoutMode,
     showActivityChart: Boolean,
+    showSessionActiveCard: Boolean,
     onSnoozeClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -41,9 +42,9 @@ fun DashboardScreenContent(
             layoutMode = layoutMode,
         )
         when (layoutMode) {
-            DashboardLayoutMode.Expanded -> ExpandedContent(state, showActivityChart, onSnoozeClick)
-            DashboardLayoutMode.Medium -> MediumContent(state, showActivityChart, onSnoozeClick)
-            DashboardLayoutMode.Compact -> CompactContent(state, showActivityChart, onSnoozeClick)
+            DashboardLayoutMode.Expanded -> ExpandedContent(state, showActivityChart, showSessionActiveCard, onSnoozeClick)
+            DashboardLayoutMode.Medium -> MediumContent(state, showActivityChart, showSessionActiveCard, onSnoozeClick)
+            DashboardLayoutMode.Compact -> CompactContent(state, showActivityChart, showSessionActiveCard, onSnoozeClick)
         }
     }
 }
@@ -103,7 +104,7 @@ private fun MetricSection(
 }
 
 @Composable
-private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean, onSnoozeClick: () -> Unit) {
+private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, onSnoozeClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(18.dp),
@@ -135,13 +136,15 @@ private fun ExpandedContent(state: DashboardUiState, showActivityChart: Boolean,
                 modifier = Modifier.fillMaxWidth(),
             )
             BreakCard(data = state.breakInfo, onSnoozeClick = onSnoozeClick, modifier = Modifier.fillMaxWidth())
-            TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+            if (showSessionActiveCard) {
+                TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }
 
 @Composable
-private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, onSnoozeClick: () -> Unit) {
+private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, onSnoozeClick: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
         if (showActivityChart) {
             ActivityChartCard(series = state.activitySeries, modifier = Modifier.fillMaxWidth())
@@ -160,10 +163,12 @@ private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, o
                     totalFocusedTime = state.totalFocusedTime,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                TrackingCard(
-                    data = state.trackingStatus,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                if (showSessionActiveCard) {
+                    TrackingCard(
+                        data = state.trackingStatus,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
             Column(
                 modifier = Modifier.weight(0.9f),
@@ -187,7 +192,7 @@ private fun MediumContent(state: DashboardUiState, showActivityChart: Boolean, o
 }
 
 @Composable
-private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, onSnoozeClick: () -> Unit) {
+private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, showSessionActiveCard: Boolean, onSnoozeClick: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
         CurrentFocusCard(
             appName = state.activeAppName,
@@ -205,7 +210,9 @@ private fun CompactContent(state: DashboardUiState, showActivityChart: Boolean, 
             modifier = Modifier.fillMaxWidth(),
         )
         BreakCard(data = state.breakInfo, onSnoozeClick = onSnoozeClick, modifier = Modifier.fillMaxWidth())
-        TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+        if (showSessionActiveCard) {
+            TrackingCard(data = state.trackingStatus, modifier = Modifier.fillMaxWidth())
+        }
         ActivityTimeline(segments = state.timeline, modifier = Modifier.fillMaxWidth())
     }
 }

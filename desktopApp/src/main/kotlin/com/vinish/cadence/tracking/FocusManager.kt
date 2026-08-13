@@ -37,7 +37,7 @@ object FocusManager {
             }
         } else {
             // Check if we should detect a break
-            if (focusMins >= threshold && idleSeconds >= 180) { // 3 minutes = 180 seconds
+            if (focusMins >= threshold && !isSnoozed && idleSeconds >= 180) { // 3 minutes = 180 seconds
                 if (!current.isBreakDetected) {
                     _state.value = current.copy(isBreakDetected = true)
                     return

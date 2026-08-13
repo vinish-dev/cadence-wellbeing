@@ -29,6 +29,7 @@ import com.vinish.cadence.ui.theme.CadenceTextSecondary
 fun SettingsScreen(
     state: SettingsState,
     onToggleActivityChart: (Boolean) -> Unit,
+    onToggleSessionActiveCard: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(20.dp))) {
@@ -68,6 +69,39 @@ fun SettingsScreen(
                 Switch(
                     checked = state.showActivityOverviewChart,
                     onCheckedChange = onToggleActivityChart,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = CadencePurple,
+                        uncheckedThumbColor = CadenceTextSecondary,
+                        uncheckedTrackColor = Color(0xFFE5E7EB)
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Show Session Active Card",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = CadenceTextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Displays the current session tracking status on the dashboard.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary
+                    )
+                }
+                
+                Switch(
+                    checked = state.showSessionActiveCard,
+                    onCheckedChange = onToggleSessionActiveCard,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = CadencePurple,

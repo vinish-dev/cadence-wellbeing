@@ -110,6 +110,7 @@ fun App() {
                                         state = dashboardState,
                                         layoutMode = layoutMode,
                                         showActivityChart = settingsState.showActivityOverviewChart,
+                                        showSessionActiveCard = settingsState.showSessionActiveCard,
                                         onSnoozeClick = { com.vinish.cadence.tracking.FocusManager.snoozeBreak() }
                                     )
                                 }
@@ -127,6 +128,7 @@ fun App() {
                                     com.vinish.cadence.ui.settings.SettingsScreen(
                                         state = settingsState,
                                         onToggleActivityChart = { com.vinish.cadence.tracking.SettingsManager.toggleActivityOverviewChart(it) },
+                                        onToggleSessionActiveCard = { com.vinish.cadence.tracking.SettingsManager.toggleSessionActiveCard(it) },
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }
