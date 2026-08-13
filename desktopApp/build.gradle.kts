@@ -26,13 +26,22 @@ compose.desktop {
         mainClass = "com.vinish.cadence.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb,TargetFormat.Exe)
-            packageName = "com.vinish.cadence"
+            targetFormats(TargetFormat.Msi,TargetFormat.Exe)
+            packageName = "Cadence"
             packageVersion = "1.0.0"
             includeAllModules = false
+
+            // Set a shortcut on the desktop and menu for windows
+            windows {
+                menuGroup = "Cadence"
+                menu = true
+                shortcut = true
+                iconFile.set(project.file("src/main/resources/images/cadence.ico"))
+            }
         }
-        buildTypes.release.proguard{
-            isEnabled.set(false)
+        buildTypes.release.proguard {
+            isEnabled.set(true)
+            configurationFiles.from(project.file("proguard-rules.pro"))
         }
     }
 }

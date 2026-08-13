@@ -1,0 +1,6 @@
+-dontwarn **
+-dontnote **
+-keep class com.vinish.cadence.** { *; }
+-keep class androidx.compose.** { *; }
+-keep class org.jetbrains.skiko.** { *; }
+-keep class com.sun.jna.** { *; }
