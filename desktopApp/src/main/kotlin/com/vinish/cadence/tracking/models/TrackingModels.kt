@@ -47,7 +47,8 @@ data class Session(
     @Serializable(with = InstantSerializer::class)
     var endTime: Instant? = null,
     val segments: MutableList<Segment> = mutableListOf(),
-    var keysTyped: Int = 0
+    var keysTyped: Int = 0,
+    var mouseClicks: Int = 0
 ) {
     val durationSeconds: Long
         get() {

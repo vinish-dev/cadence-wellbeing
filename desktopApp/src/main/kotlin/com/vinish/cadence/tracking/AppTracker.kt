@@ -29,7 +29,7 @@ object AppTracker {
     val state = _state.asStateFlow()
 
     private var running = false
-    private const val IDLE_TIMEOUT_SECONDS = 600L
+    private const val IDLE_TIMEOUT_SECONDS = 900L
 
     fun start() {
         synchronized(this) {

@@ -30,6 +30,11 @@ fun main() {
     com.vinish.cadence.tracking.KeyboardTracker.initialize(initialKeysTyped)
     com.vinish.cadence.tracking.KeyboardTracker.start()
 
+    val initialMouseClicks = com.vinish.cadence.tracking.SessionManager.sessions.value.sumOf { it.mouseClicks } + 
+                             (com.vinish.cadence.tracking.SessionManager.currentSession.value?.mouseClicks ?: 0)
+    com.vinish.cadence.tracking.MouseTracker.initialize(initialMouseClicks)
+    com.vinish.cadence.tracking.MouseTracker.start()
+
     application {
         var isWindowVisible by remember { mutableStateOf(true) }
 

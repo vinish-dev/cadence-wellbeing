@@ -41,13 +41,15 @@ fun App() {
 
     val trackerState by AppTracker.state.collectAsState()
     val typingCount by KeyboardTracker.typingCount.collectAsState()
+    val clickCount by com.vinish.cadence.tracking.MouseTracker.clickCount.collectAsState()
     val currentSession by SessionManager.currentSession.collectAsState()
     val pastSessions by SessionManager.sessions.collectAsState()
     val settingsState by com.vinish.cadence.tracking.SettingsManager.settings.collectAsState()
     val focusState by com.vinish.cadence.tracking.FocusManager.state.collectAsState()
-    val dashboardState = remember(trackerState, typingCount, currentSession, pastSessions, focusState) {
+    val dashboardState = remember(trackerState, typingCount, clickCount, currentSession, pastSessions, focusState) {
         dashboardStateFromTracking(
             typingCount = typingCount,
+            clickCount = clickCount,
             trackerState = trackerState,
             currentSession = currentSession,
             pastSessions = pastSessions,

@@ -64,6 +64,10 @@ object SessionManager {
         _currentSession.value?.keysTyped = (_currentSession.value?.keysTyped ?: 0) + 1
     }
 
+    fun incrementMouseClicks() {
+        _currentSession.value?.mouseClicks = (_currentSession.value?.mouseClicks ?: 0) + 1
+    }
+
     fun onIdleTimeout(timestamp: Instant) {
         endCurrentSession(timestamp)
     }

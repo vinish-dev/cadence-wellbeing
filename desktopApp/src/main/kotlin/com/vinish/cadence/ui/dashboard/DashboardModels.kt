@@ -231,6 +231,7 @@ fun mockDashboardState(): DashboardUiState = DashboardUiState(
 
 fun dashboardStateFromTracking(
     typingCount: Int,
+    clickCount: Int,
     trackerState: TrackerState,
     currentSession: Session? = null,
     pastSessions: List<Session> = emptyList(),
@@ -337,8 +338,8 @@ fun dashboardStateFromTracking(
                 iconBackground = CadenceOrangeSoft,
             ),
             MetricCardData(
-                title = "Focus Score",
-                value = "85",
+                title = "Mouse Clicks",
+                value = clickCount.formatWithGrouping(),
                 trend = "",
                 trendPositive = true,
                 caption = "Live today",
