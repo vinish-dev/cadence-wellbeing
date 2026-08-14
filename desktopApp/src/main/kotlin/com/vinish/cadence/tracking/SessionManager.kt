@@ -106,4 +106,12 @@ object SessionManager {
             StorageManager.saveActiveSession(null)
         }
     }
+
+    fun clearTodayData() {
+        _sessions.value = emptyList()
+        _currentSession.value = null
+        KeyboardTracker.initialize(0)
+        MouseTracker.initialize(0)
+        StorageManager.clearTodayData()
+    }
 }

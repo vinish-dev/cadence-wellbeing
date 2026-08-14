@@ -110,4 +110,15 @@ object StorageManager {
             emptyList()
         }
     }
+
+    fun clearTodayData() {
+        val todayStr = dateFormatter.format(Instant.now())
+        val file = getSessionFileForDate(todayStr)
+        if (file.exists()) {
+            file.delete()
+        }
+        if (activeSessionFile.exists()) {
+            activeSessionFile.delete()
+        }
+    }
 }

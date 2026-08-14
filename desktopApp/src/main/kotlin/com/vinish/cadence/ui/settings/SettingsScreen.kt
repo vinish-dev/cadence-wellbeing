@@ -317,6 +317,27 @@ fun SettingsScreen(
                     )
                 )
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Text(
+                text = "Data Management",
+                style = MaterialTheme.typography.titleMedium,
+                color = CadenceTextPrimary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            androidx.compose.material3.OutlinedButton(
+                onClick = { com.vinish.cadence.tracking.SessionManager.clearTodayData() },
+                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color(0xFFDC2626) // Red color for destructive action
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDC2626)),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Clear Today's Data")
+            }
         }
     }
 }
