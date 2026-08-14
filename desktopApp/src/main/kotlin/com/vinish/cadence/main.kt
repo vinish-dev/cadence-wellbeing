@@ -16,7 +16,9 @@ fun main() {
         com.vinish.cadence.tracking.SessionManager.currentSession.value?.let { session ->
             // End the last segment
             session.segments.lastOrNull()?.endTime = java.time.Instant.now()
-            com.vinish.cadence.tracking.StorageManager.saveActiveSession(session)
+            session.endTime = java.time.Instant.now()
+            com.vinish.cadence.tracking.StorageManager.saveSession(session)
+            com.vinish.cadence.tracking.StorageManager.saveActiveSession(null)
         }
     })
 

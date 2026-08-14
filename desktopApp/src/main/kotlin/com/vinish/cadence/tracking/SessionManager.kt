@@ -20,7 +20,25 @@ object SessionManager {
 
     init {
         _sessions.value = StorageManager.loadTodaySessions()
-        _currentSession.value = StorageManager.loadActiveSession()
+        
+        val loadedSession = StorageManager.loadActiveSession()
+        if (loadedSession != null) {
+            val lastActivity = loadedSession.segments.lastOrNull()?.endTime 
+                ?: loadedSession.segments.lastOrNull()?.startTime 
+                ?: loadedSession.startTime
+            
+            val idleDuration = java.time.Duration.between(lastActivity, Instant.now()).seconds
+            if (idleDuration > 900) { // 15 minutes gap means the session is definitively over
+                loadedSession.endTime = lastActivity
+                StorageManager.saveSession(loadedSession)
+                StorageManager.saveActiveSession(null)
+                _currentSession.value = null
+            } else {
+                _currentSession.value = loadedSession
+            }
+        } else {
+            _currentSession.value = null
+        }
     }
 
     fun start() {
