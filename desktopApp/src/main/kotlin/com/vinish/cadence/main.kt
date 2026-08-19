@@ -11,6 +11,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
 fun main() {
+    com.vinish.cadence.SingleInstanceManager.acquireOrExit()
+
     // Add shutdown hook to save active session
     Runtime.getRuntime().addShutdownHook(Thread {
         com.vinish.cadence.tracking.SessionManager.currentSession.value?.let { session ->
@@ -39,6 +41,16 @@ fun main() {
 
     application {
         var isWindowVisible by remember { mutableStateOf(true) }
+        var showTrigger by remember { mutableStateOf(0) }
+        val windowState = androidx.compose.ui.window.rememberWindowState()
+
+        androidx.compose.runtime.LaunchedEffect(Unit) {
+            com.vinish.cadence.SingleInstanceManager.showWindowRequests.collect {
+                isWindowVisible = true
+                windowState.isMinimized = false
+                showTrigger++
+            }
+        }
 
         val trayIcon = painterResource("images/winter-pear.png")
 //        val trayIcon = painterResource("images/sakura.png")
@@ -47,11 +59,19 @@ fun main() {
         Tray(
             icon = trayIcon,
             tooltip = "Cadence",
-            onAction = { isWindowVisible = true },
+            onAction = {
+                isWindowVisible = true
+                windowState.isMinimized = false
+                showTrigger++
+            },
             menu = {
                 Item(
                     "Show Dashboard",
-                    onClick = { isWindowVisible = true }
+                    onClick = {
+                        isWindowVisible = true
+                        windowState.isMinimized = false
+                        showTrigger++
+                    }
                 )
                 Item(
                     "Exit Cadence",
@@ -66,8 +86,13 @@ fun main() {
                 title = "Cadence",
                 resizable = true,
                 icon = trayIcon,
+                state = windowState
             ) {
-                window.minimumSize = java.awt.Dimension(1400,850 )
+                androidx.compose.runtime.LaunchedEffect(showTrigger) {
+                    window.toFront()
+                    window.requestFocus()
+                }
+                window.minimumSize = java.awt.Dimension(1400, 850)
                 App()
             }
         }
