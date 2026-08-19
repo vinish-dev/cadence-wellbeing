@@ -28,7 +28,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi,TargetFormat.Exe)
             packageName = "Cadence"
-            packageVersion = "2.0.0"
+            packageVersion = "2.0.1"
             includeAllModules = false
 
             // Set a shortcut on the desktop and menu for windows

@@ -14,7 +14,10 @@ data class SettingsState(
     val isKeyboardTrackingEnabled: Boolean = true,
     val isMouseTrackingEnabled: Boolean = true,
     val isActivityDetectionEnabled: Boolean = true,
-    val runAtStartup: Boolean = true
+    val runAtStartup: Boolean = true,
+    val breakRemindersEnabled: Boolean = true,
+    val notificationSoundEnabled: Boolean = true,
+    val smartBreakNotificationsEnabled: Boolean = true
 )
 
 object SettingsManager {
@@ -89,5 +92,20 @@ object SettingsManager {
         _settings.value = _settings.value.copy(runAtStartup = enabled)
         StorageManager.saveSettings(_settings.value)
         StartupManager.setRunAtStartup(enabled)
+    }
+
+    fun toggleBreakReminders(enabled: Boolean) {
+        _settings.value = _settings.value.copy(breakRemindersEnabled = enabled)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleNotificationSound(enabled: Boolean) {
+        _settings.value = _settings.value.copy(notificationSoundEnabled = enabled)
+        StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleSmartBreakNotifications(enabled: Boolean) {
+        _settings.value = _settings.value.copy(smartBreakNotificationsEnabled = enabled)
+        StorageManager.saveSettings(_settings.value)
     }
 }

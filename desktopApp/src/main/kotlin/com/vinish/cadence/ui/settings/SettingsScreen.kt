@@ -101,7 +101,39 @@ fun SettingsScreen(
             }
         }
 
-        // 3. Tracking & Privacy
+        // 3. Notifications
+        SettingsCard(
+            icon = Icons.Outlined.Notifications,
+            title = "Notifications",
+            subtitle = "Control how and when Cadence alerts you."
+        ) {
+            SettingsToggleRow(
+                title = "Break Reminders",
+                subtitle = "Receive a notification when your break timer is up.",
+                icon = Icons.Outlined.Alarm,
+                iconTint = CadencePurple,
+                checked = state.breakRemindersEnabled,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleBreakReminders(it) }
+            )
+            SettingsToggleRow(
+                title = "Notification Sound",
+                subtitle = "Play a sound with notifications.",
+                icon = Icons.Outlined.VolumeUp,
+                iconTint = Color(0xFFF59E0B), // Orange/Gold
+                checked = state.notificationSoundEnabled,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleNotificationSound(it) }
+            )
+            SettingsToggleRow(
+                title = "Smart Break Notifications",
+                subtitle = "Get notified when Cadence automatically detects you took a break.",
+                icon = Icons.Outlined.AutoAwesome,
+                iconTint = Color(0xFF10B981), // Green
+                checked = state.smartBreakNotificationsEnabled,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleSmartBreakNotifications(it) }
+            )
+        }
+
+        // 4. Tracking & Privacy
         SettingsCard(
             icon = Icons.Outlined.Shield,
             title = "Tracking & Privacy",
