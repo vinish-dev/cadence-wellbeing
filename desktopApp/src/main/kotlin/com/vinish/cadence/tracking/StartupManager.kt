@@ -10,7 +10,10 @@ object StartupManager {
 
     fun setRunAtStartup(enabled: Boolean) {
         try {
-            val exePath = ProcessHandle.current().info().command().orElse("")
+            var exePath = System.getProperty("jpackage.app-path")
+            if (exePath == null) {
+                exePath = ProcessHandle.current().info().command().orElse("")
+            }
             
             // If running via gradle/IDE, the exe path might be java.exe. 
             // We should only set startup if it's the actual packaged app.

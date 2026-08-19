@@ -14,19 +14,34 @@ data class SettingsState(
     val isKeyboardTrackingEnabled: Boolean = true,
     val isMouseTrackingEnabled: Boolean = true,
     val isActivityDetectionEnabled: Boolean = true,
-    val runAtStartup: Boolean = false
+    val runAtStartup: Boolean = true
 )
 
 object SettingsManager {
-    private val _settings = MutableStateFlow(StorageManager.loadSettings() ?: SettingsState())
+    private val _settings = MutableStateFlow(SettingsState())
     val settings = _settings.asStateFlow()
 
     init {
-        // Sync setting with actual Windows registry state on load
+        val loaded = StorageManager.loadSettings()
+        val isFirstLaunch = loaded == null
+        val currentSettings = loaded ?: SettingsState()
+        
         val actualStartupState = StartupManager.isRunAtStartupEnabled()
-        if (_settings.value.runAtStartup != actualStartupState) {
-            _settings.value = _settings.value.copy(runAtStartup = actualStartupState)
-            StorageManager.saveSettings(_settings.value)
+        
+        if (isFirstLaunch && currentSettings.runAtStartup) {
+            // First launch, apply the default true setting to the OS
+            StartupManager.setRunAtStartup(true)
+            _settings.value = currentSettings
+            StorageManager.saveSettings(currentSettings)
+        } else {
+            // Not first launch. OS is the source of truth for startup state.
+            if (currentSettings.runAtStartup != actualStartupState) {
+                val synced = currentSettings.copy(runAtStartup = actualStartupState)
+                _settings.value = synced
+                StorageManager.saveSettings(synced)
+            } else {
+                _settings.value = currentSettings
+            }
         }
     }
 
