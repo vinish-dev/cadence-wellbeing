@@ -321,11 +321,44 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
             
             Text(
-                text = "Data Management",
+                text = "System & Data",
                 style = MaterialTheme.typography.titleMedium,
                 color = CadenceTextPrimary
             )
             Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Run at Startup",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = CadenceTextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Automatically start Cadence in the background when you sign in.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = CadenceTextSecondary
+                    )
+                }
+                
+                Switch(
+                    checked = state.runAtStartup,
+                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleRunAtStartup(it) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = CadencePurple,
+                        uncheckedThumbColor = CadenceTextSecondary,
+                        uncheckedTrackColor = Color(0xFFE5E7EB)
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
 
             androidx.compose.material3.OutlinedButton(
                 onClick = { com.vinish.cadence.tracking.SessionManager.clearTodayData() },

@@ -13,12 +13,22 @@ data class SettingsState(
     val userName: String = "Cadence User",
     val isKeyboardTrackingEnabled: Boolean = true,
     val isMouseTrackingEnabled: Boolean = true,
-    val isActivityDetectionEnabled: Boolean = true
+    val isActivityDetectionEnabled: Boolean = true,
+    val runAtStartup: Boolean = false
 )
 
 object SettingsManager {
     private val _settings = MutableStateFlow(StorageManager.loadSettings() ?: SettingsState())
     val settings = _settings.asStateFlow()
+
+    init {
+        // Sync setting with actual Windows registry state on load
+        val actualStartupState = StartupManager.isRunAtStartupEnabled()
+        if (_settings.value.runAtStartup != actualStartupState) {
+            _settings.value = _settings.value.copy(runAtStartup = actualStartupState)
+            StorageManager.saveSettings(_settings.value)
+        }
+    }
 
     fun toggleActivityOverviewChart(show: Boolean) {
         _settings.value = _settings.value.copy(showActivityOverviewChart = show)
@@ -58,5 +68,11 @@ object SettingsManager {
     fun toggleActivityDetection(enabled: Boolean) {
         _settings.value = _settings.value.copy(isActivityDetectionEnabled = enabled)
         StorageManager.saveSettings(_settings.value)
+    }
+
+    fun toggleRunAtStartup(enabled: Boolean) {
+        _settings.value = _settings.value.copy(runAtStartup = enabled)
+        StorageManager.saveSettings(_settings.value)
+        StartupManager.setRunAtStartup(enabled)
     }
 }
