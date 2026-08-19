@@ -1,24 +1,19 @@
 package com.vinish.cadence.ui.settings
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.vinish.cadence.tracking.SettingsState
 import com.vinish.cadence.ui.theme.CadencePurple
@@ -33,344 +28,311 @@ fun SettingsScreen(
     onToggleDonutChart: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(20.dp))) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color.White)
-                .padding(24.dp)
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // 1. Dashboard Preferences
+        SettingsCard(
+            icon = Icons.Outlined.GridView,
+            title = "Dashboard Preferences",
+            subtitle = "Choose what you want to see on your dashboard."
         ) {
-            Text(
-                text = "Dashboard Preferences",
-                style = MaterialTheme.typography.titleMedium,
-                color = CadenceTextPrimary
+            SettingsToggleRow(
+                title = "Show Activity Overview Line Chart",
+                subtitle = "Displays a timeline chart of your focus sessions on the dashboard.",
+                icon = Icons.Outlined.ShowChart,
+                checked = state.showActivityOverviewChart,
+                onCheckedChange = onToggleActivityChart
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Show Activity Overview Line Chart",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Displays a timeline chart of your focus sessions on the dashboard.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.showActivityOverviewChart,
-                    onCheckedChange = onToggleActivityChart,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Show Session Active Card",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Displays the current session tracking status on the dashboard.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.showSessionActiveCard,
-                    onCheckedChange = onToggleSessionActiveCard,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
+            SettingsToggleRow(
+                title = "Show Session Active Card",
+                subtitle = "Displays the current session tracking status on the dashboard.",
+                icon = Icons.Outlined.Timer,
+                checked = state.showSessionActiveCard,
+                onCheckedChange = onToggleSessionActiveCard
+            )
+            SettingsToggleRow(
+                title = "Show Top Apps Donut Chart",
+                subtitle = "Displays a visual breakdown of your top applications.",
+                icon = Icons.Outlined.PieChart,
+                checked = state.showDonutChart,
+                onCheckedChange = onToggleDonutChart
+            )
+            SettingsInputRow(
+                title = "Display Name",
+                subtitle = "How you want to be greeted on the dashboard.",
+                icon = Icons.Outlined.Person,
+                value = state.userName,
+                onValueChange = { com.vinish.cadence.tracking.SettingsManager.updateUserName(it) }
+            )
+        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Show Top Apps Donut Chart",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Displays a visual breakdown of your top applications.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.showDonutChart,
-                    onCheckedChange = onToggleDonutChart,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Column(modifier = Modifier.fillMaxWidth()) {
+        // 2. Break Timer
+        SettingsCard(
+            icon = Icons.Outlined.Schedule,
+            title = "Break Timer",
+            subtitle = "Set how often you'd like to be reminded to take a break.",
+            trailingContent = {
                 Text(
-                    text = "Display Name",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = CadenceTextPrimary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "How you want to be greeted on the dashboard.",
+                    text = "Current: ${state.breakTimerMinutes} minutes",
                     style = MaterialTheme.typography.bodyMedium,
                     color = CadenceTextSecondary
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                androidx.compose.material3.OutlinedTextField(
-                    value = state.userName,
-                    onValueChange = { com.vinish.cadence.tracking.SettingsManager.updateUserName(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    singleLine = true,
-                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = CadencePurple,
-                        unfocusedBorderColor = Color(0xFFE5E7EB),
-                        focusedTextColor = CadenceTextPrimary,
-                        unfocusedTextColor = CadenceTextPrimary,
-                        cursorColor = CadencePurple
-                    )
-                )
             }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Break Timer",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = CadenceTextPrimary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Set how often you'd like to be reminded to take a break. Current: ${state.breakTimerMinutes} minutes.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = CadenceTextSecondary
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                androidx.compose.material3.Slider(
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(start = 56.dp)) {
+                Slider(
                     value = state.breakTimerMinutes.toFloat(),
                     onValueChange = { com.vinish.cadence.tracking.SettingsManager.updateBreakTimer(it.toInt()) },
                     valueRange = 15f..120f,
-                    steps = 20, // 105 range / 5 = 21 steps? 20 intermediate steps
-                    colors = androidx.compose.material3.SliderDefaults.colors(
+                    steps = 20,
+                    colors = SliderDefaults.colors(
                         thumbColor = CadencePurple,
                         activeTrackColor = CadencePurple,
                         inactiveTrackColor = Color(0xFFE5E7EB)
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
-                
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("15m", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
-                    Text("120m", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
+                    Text("15 min", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
+                    Text("120 min", style = MaterialTheme.typography.bodySmall, color = CadenceTextSecondary)
                 }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Text(
-                text = "Tracking & Privacy",
-                style = MaterialTheme.typography.titleMedium,
-                color = CadenceTextPrimary
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Activity Detection",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Used to determine whether you're actively using your computer for break detection.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.isActivityDetectionEnabled,
-                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleActivityDetection(it) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Track Keyboard Activity",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Count keyboard presses for the Keys Typed metric.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.isKeyboardTrackingEnabled,
-                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleKeyboardTracking(it) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Track Mouse Activity",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Count mouse clicks for the Mouse Clicks metric.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.isMouseTrackingEnabled,
-                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleMouseTracking(it) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            Text(
-                text = "System & Data",
-                style = MaterialTheme.typography.titleMedium,
-                color = CadenceTextPrimary
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Run at Startup",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = CadenceTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Automatically start Cadence in the background when you sign in.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = CadenceTextSecondary
-                    )
-                }
-                
-                Switch(
-                    checked = state.runAtStartup,
-                    onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleRunAtStartup(it) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CadencePurple,
-                        uncheckedThumbColor = CadenceTextSecondary,
-                        uncheckedTrackColor = Color(0xFFE5E7EB)
-                    )
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-
-            androidx.compose.material3.OutlinedButton(
-                onClick = { com.vinish.cadence.tracking.SessionManager.clearTodayData() },
-                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color(0xFFDC2626) // Red color for destructive action
-                ),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDC2626)),
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("Clear Today's Data")
             }
         }
+
+        // 3. Tracking & Privacy
+        SettingsCard(
+            icon = Icons.Outlined.Shield,
+            title = "Tracking & Privacy",
+            subtitle = "Control what Cadence tracks to help improve your insights."
+        ) {
+            SettingsToggleRow(
+                title = "Activity Detection",
+                subtitle = "Used to determine whether you're actively using your computer for break detection.",
+                icon = Icons.Outlined.MonitorHeart,
+                iconTint = Color(0xFF10B981), // Green color for activity detection icon like screenshot
+                checked = state.isActivityDetectionEnabled,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleActivityDetection(it) }
+            )
+            SettingsToggleRow(
+                title = "Track Keyboard Activity",
+                subtitle = "Count keyboard presses for the Keys Typed metric.",
+                icon = Icons.Outlined.Keyboard,
+                iconTint = Color(0xFF3B82F6), // Blue
+                checked = state.isKeyboardTrackingEnabled,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleKeyboardTracking(it) }
+            )
+            SettingsToggleRow(
+                title = "Track Mouse Activity",
+                subtitle = "Count mouse clicks for the Mouse Clicks metric.",
+                icon = Icons.Outlined.Mouse,
+                iconTint = Color(0xFFF59E0B), // Orange
+                checked = state.isMouseTrackingEnabled,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleMouseTracking(it) }
+            )
+        }
+
+        // 4. System & Data
+        SettingsCard(
+            icon = Icons.Outlined.Storage,
+            title = "System & Data",
+            subtitle = "Manage how Cadence runs and your local data."
+        ) {
+            SettingsToggleRow(
+                title = "Run at Startup",
+                subtitle = "Automatically start Cadence in the background when you sign in.",
+                icon = Icons.Outlined.PowerSettingsNew,
+                checked = state.runAtStartup,
+                onCheckedChange = { com.vinish.cadence.tracking.SettingsManager.toggleRunAtStartup(it) }
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            OutlinedButton(
+                onClick = { com.vinish.cadence.tracking.SessionManager.clearTodayData() },
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Color(0xFFDC2626) // Red color for destructive action
+                ),
+                border = BorderStroke(1.dp, Color(0xFFDC2626)),
+                modifier = Modifier.fillMaxWidth().padding(start = 56.dp),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "Clear Data",
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Clear Today's Data")
+            }
+            Text(
+                text = "This will permanently delete all data collected today. This action cannot be undone.",
+                style = MaterialTheme.typography.bodySmall,
+                color = CadenceTextSecondary,
+                modifier = Modifier.fillMaxWidth().padding(start = 56.dp, top = 8.dp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingsCard(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    trailingContent: @Composable () -> Unit = {},
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(width = 1.dp, color = Color(0xFFE5E7EB), shape = RoundedCornerShape(16.dp))
+            .background(Color.White, shape = RoundedCornerShape(16.dp))
+            .padding(24.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(CadencePurple.copy(alpha = 0.1f), shape = RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = CadencePurple,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = CadenceTextPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CadenceTextSecondary
+                )
+            }
+            trailingContent()
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        content()
+    }
+}
+
+@Composable
+fun SettingsToggleRow(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    iconTint: Color = CadenceTextSecondary,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(32.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = CadenceTextPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CadenceTextSecondary
+                )
+            }
+        }
+        
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = CadencePurple,
+                uncheckedThumbColor = CadenceTextSecondary,
+                uncheckedTrackColor = Color(0xFFE5E7EB)
+            )
+        )
+    }
+}
+
+@Composable
+fun SettingsInputRow(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = CadenceTextSecondary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(32.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = CadenceTextPrimary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = CadenceTextSecondary
+                )
+            }
+        }
+        
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.width(200.dp),
+            textStyle = MaterialTheme.typography.bodyLarge,
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = CadencePurple,
+                unfocusedBorderColor = Color(0xFFE5E7EB),
+                focusedTextColor = CadenceTextPrimary,
+                unfocusedTextColor = CadenceTextPrimary,
+                cursorColor = CadencePurple
+            )
+        )
     }
 }

@@ -115,7 +115,7 @@ fun App() {
                                 item {
                                     SectionHeader(
                                         title = "Settings",
-                                        subtitle = "Manage your dashboard preferences.",
+                                        subtitle = "Customize Cadence to match your workflow.",
                                         todayLabel = dashboardState.todayLabel,
                                     )
                                 }
