@@ -361,7 +361,7 @@ fun dashboardStateFromTracking(
                 val percentage = (share * 100).toInt().toString() + "%"
                 val color = getAppColor(appName)
                 AppUsageData(appName, formatCompactDuration(durationSeconds), percentage, share, color)
-            }.take(6),
+            },
         totalFocusedTime = formatClockDuration(totalTrackedSeconds),
         timeline = (currentSession?.segments ?: emptyList()).toTimelineSegments(),
         breakInfo = BreakInfoData(

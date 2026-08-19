@@ -57,12 +57,13 @@ fun Sidebar(
         SidebarItemUi(CadenceDestination.Dashboard, Icons.Outlined.Dashboard),
         SidebarItemUi(CadenceDestination.Activity, Icons.Outlined.AutoGraph),
         SidebarItemUi(CadenceDestination.Apps, Icons.Outlined.Apps),
+        SidebarItemUi(CadenceDestination.Settings, Icons.Outlined.Settings),
     )
 
     Column(
         modifier = modifier
             .fillMaxHeight()
-            .width(if (compact) 100.dp else 180.dp)
+            .width(if (compact) 100.dp else 210.dp)
             .background(Color.White)
             .padding(horizontal = 14.dp, vertical = 20.dp),
     ) {
@@ -87,9 +88,6 @@ fun Sidebar(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 SidebarBottomIcon(icon = Icons.Outlined.DarkMode, onClick = {})
-                SidebarBottomIcon(
-                    icon = Icons.Outlined.Settings,
-                    onClick = { onDestinationSelected(CadenceDestination.Settings) })
             }
         } else {
             Row(
@@ -98,9 +96,6 @@ fun Sidebar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SidebarBottomIcon(icon = Icons.Outlined.DarkMode, onClick = {})
-                SidebarBottomIcon(
-                    icon = Icons.Outlined.Settings,
-                    onClick = { onDestinationSelected(CadenceDestination.Settings) })
             }
         }
     }
@@ -109,13 +104,12 @@ fun Sidebar(
 @Composable
 private fun SidebarBottomIcon(
     icon: ImageVector,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .size(42.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(CadenceBackground)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -172,7 +166,7 @@ private fun SidebarItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(if (selected) CadencePurpleSoft else CadenceBackground)
+            .background(if (selected) CadencePurpleSoft else Color.Transparent)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
