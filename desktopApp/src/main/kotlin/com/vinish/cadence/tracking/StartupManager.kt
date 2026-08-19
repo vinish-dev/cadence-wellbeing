@@ -23,8 +23,8 @@ object StartupManager {
             }
 
             if (enabled) {
-                // Ensure path is quoted in case of spaces
-                val command = "\"$exePath\""
+                // Ensure path is quoted in case of spaces and append the startup flag
+                val command = "\"$exePath\" --startup"
                 Advapi32Util.registrySetStringValue(WinReg.HKEY_CURRENT_USER, RUN_KEY, APP_NAME, command)
             } else {
                 if (Advapi32Util.registryValueExists(WinReg.HKEY_CURRENT_USER, RUN_KEY, APP_NAME)) {

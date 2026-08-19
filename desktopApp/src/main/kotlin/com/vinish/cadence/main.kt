@@ -10,7 +10,7 @@ import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
-fun main() {
+fun main(args: Array<String>) {
     com.vinish.cadence.SingleInstanceManager.acquireOrExit()
 
     // Add shutdown hook to save active session
@@ -40,7 +40,7 @@ fun main() {
     com.vinish.cadence.tracking.MouseTracker.start()
 
     application {
-        var isWindowVisible by remember { mutableStateOf(true) }
+        var isWindowVisible by remember { mutableStateOf(!args.contains("--startup")) }
         var showTrigger by remember { mutableStateOf(0) }
         val windowState = androidx.compose.ui.window.rememberWindowState()
 
