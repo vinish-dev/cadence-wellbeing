@@ -240,17 +240,29 @@ fun dashboardStateFromTracking(
     val pastAppUsages = mutableMapOf<String, Long>()
     pastSessions.forEach { session ->
         session.segments.forEach { seg ->
-            pastAppUsages[seg.appName] = pastAppUsages.getOrDefault(seg.appName, 0L) + seg.durationSeconds
+            if (seg.appName != "None" && seg.appName != "Idle") {
+                pastAppUsages[seg.appName] = pastAppUsages.getOrDefault(seg.appName, 0L) + seg.durationSeconds
+            }
         }
     }
     
+    val rawIdleSeconds = com.vinish.cadence.tracking.SystemTracker.getIdleTimeSeconds()
+    val isBreakDetected = focusState.isBreakDetected
+    val activeBreakDeduction = if (isBreakDetected) rawIdleSeconds else 0L
+
     val combinedUsages = pastAppUsages.toMutableMap()
     trackerState.appUsages.forEach { usage ->
-        combinedUsages[usage.appName] = combinedUsages.getOrDefault(usage.appName, 0L) + usage.durationSeconds
+        if (usage.appName != "None" && usage.appName != "Idle") {
+            var usageDuration = usage.durationSeconds
+            if (activeBreakDeduction > 0 && usage.appName == trackerState.activeApp) {
+                usageDuration = (usageDuration - activeBreakDeduction).coerceAtLeast(0L)
+            }
+            combinedUsages[usage.appName] = combinedUsages.getOrDefault(usage.appName, 0L) + usageDuration
+        }
     }
     
     val totalTrackedSeconds = combinedUsages.values.sum()
-    val activeSessionSeconds = currentSession?.durationSeconds ?: 0L
+    val activeSessionSeconds = ((currentSession?.durationSeconds ?: 0L) - activeBreakDeduction).coerceAtLeast(0L)
     
     val currentFocusMinutes = focusState.currentFocusMinutes
     val isSnoozed = focusState.snoozeUntil != null && java.time.Instant.now().isBefore(focusState.snoozeUntil)
@@ -276,7 +288,9 @@ fun dashboardStateFromTracking(
         // Aggregate apps for this session
         val appDurations = mutableMapOf<String, Long>()
         session.segments.forEach { seg ->
-            appDurations[seg.appName] = appDurations.getOrDefault(seg.appName, 0L) + seg.durationSeconds
+            if (seg.appName != "None" && seg.appName != "Idle") {
+                appDurations[seg.appName] = appDurations.getOrDefault(seg.appName, 0L) + seg.durationSeconds
+            }
         }
         val totalSessionDuration = session.durationSeconds.coerceAtLeast(1L)
         val sortedApps = appDurations.entries.sortedByDescending { it.value }.take(4)
@@ -289,7 +303,7 @@ fun dashboardStateFromTracking(
         }
         
         // Convert segments to timeline
-        val timeline = session.segments.toTimelineSegments()
+        val timeline = session.segments.filter { it.appName != "None" && it.appName != "Idle" }.toTimelineSegments()
         
         SessionSummaryData(
             name = "Session $sessionNum",
@@ -363,7 +377,7 @@ fun dashboardStateFromTracking(
                 AppUsageData(appName, formatCompactDuration(durationSeconds), percentage, share, color)
             },
         totalFocusedTime = formatClockDuration(totalTrackedSeconds),
-        timeline = (currentSession?.segments ?: emptyList()).toTimelineSegments(),
+        timeline = (currentSession?.segments ?: emptyList()).filter { it.appName != "None" && it.appName != "Idle" }.toTimelineSegments(),
         breakInfo = BreakInfoData(
             currentFocusMinutes = currentFocusMinutes,
             nextBreakMinutes = nextBreakMinutes,

@@ -21,8 +21,14 @@ data class FocusState(
 object FocusManager {
     private val _state = MutableStateFlow(FocusState())
     val state = _state.asStateFlow()
+    
+    private var lastPeakIdleSeconds = 0L
 
     fun checkIdle(idleSeconds: Long) {
+        if (idleSeconds > 0) {
+            lastPeakIdleSeconds = idleSeconds
+        }
+        
         val current = _state.value
         val focusMins = (Duration.between(current.focusStartTime, Instant.now()).seconds / 60).toInt()
         val threshold = SettingsManager.settings.value.breakTimerMinutes
@@ -32,9 +38,12 @@ object FocusManager {
             // Activity resumed
             if (current.isBreakDetected) {
                 // They were on a detected break, now they are back. Reset focus.
+                SessionManager.onSmartBreakEnded(lastPeakIdleSeconds)
                 _state.value = FocusState(focusStartTime = Instant.now())
+                lastPeakIdleSeconds = 0L
                 return
             }
+            lastPeakIdleSeconds = 0L
         } else {
             // Check if we should detect a break
             if (focusMins >= threshold && !isSnoozed && idleSeconds >= 180) { // 3 minutes = 180 seconds

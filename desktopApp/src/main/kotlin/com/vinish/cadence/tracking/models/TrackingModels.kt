@@ -31,12 +31,13 @@ data class Segment(
     @Serializable(with = InstantSerializer::class)
     val startTime: Instant,
     @Serializable(with = InstantSerializer::class)
-    var endTime: Instant? = null
+    var endTime: Instant? = null,
+    var breakDeductionSeconds: Long = 0
 ) {
     val durationSeconds: Long
         get() {
             val end = endTime ?: Instant.now()
-            return Duration.between(startTime, end).seconds
+            return (Duration.between(startTime, end).seconds - breakDeductionSeconds).coerceAtLeast(0)
         }
 }
 

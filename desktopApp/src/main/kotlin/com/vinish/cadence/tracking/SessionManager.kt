@@ -90,6 +90,17 @@ object SessionManager {
         endCurrentSession(timestamp)
     }
 
+    fun onSmartBreakEnded(breakDurationSeconds: Long) {
+        val current = _currentSession.value ?: return
+        val lastSeg = current.segments.lastOrNull()
+        if (lastSeg != null) {
+            lastSeg.breakDeductionSeconds += breakDurationSeconds
+            // Trigger flow update so UI refreshes
+            _currentSession.value = current.copy(segments = current.segments.toMutableList())
+            StorageManager.saveActiveSession(_currentSession.value)
+        }
+    }
+
     private fun endCurrentSession(timestamp: Instant = Instant.now()) {
         FocusManager.markBreakDetected()
         val current = _currentSession.value
